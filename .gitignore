@@ -2,3 +2,4 @@ __pycache__/
 bench/data/
 bench/.jobs/
 *.pyc
+results/runs/   # in-progress runs; un-ignored when the batch finishes
