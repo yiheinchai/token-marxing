@@ -48,7 +48,7 @@ def build_model():
 
 def main():
     torch.set_num_threads(prepare.NUM_THREADS)
-    torch.manual_seed(0)
+    torch.manual_seed(int(os.environ.get("SEED", 0)))
     budget = 3.0 if os.environ.get("SMOKE") else prepare.TIME_BUDGET_S
     model = build_model()
     n_params = prepare.count_params(model)

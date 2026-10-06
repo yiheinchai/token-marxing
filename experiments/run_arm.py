@@ -12,6 +12,7 @@ Arms (who does what):
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -41,13 +42,17 @@ SCRUB = ["CLAUDE_CODE_SESSION_ID", "CLAUDE_CODE_MESSAGING_SOCKET", "CLAUDE_CODE_
          "CLAUDE_CODE_SYNC_SKILLS", "CLAUDE_CODE_SYNC_PLUGINS", "CLAUDE_CODE_SYNC_SESSION_REFS"]
 
 
-def make_workspace(ws, arm):
+def make_workspace(ws, arm, labour):
     if os.path.exists(ws):
         shutil.rmtree(ws)
     os.makedirs(ws)
     bench = os.path.join(ROOT, "bench")
-    for f in ("prepare.py", "train.py", "check.py", "jobq.py", "program.md"):
+    for f in ("prepare.py", "train.py", "check.py", "jobq.py"):
         shutil.copy(os.path.join(bench, f), ws)
+    program = "program.md" if labour == "light" else "program_heavy.md"
+    shutil.copy(os.path.join(bench, program), os.path.join(ws, "program.md"))
+    with open(os.path.join(ws, "cluster.json"), "w") as fh:
+        json.dump({"mode": labour}, fh)
     shutil.copytree(os.path.join(bench, "data"), os.path.join(ws, "data"))
     with open(os.path.join(ws, "results.tsv"), "w") as fh:
         fh.write("exp\tjob\tval_bpb\tstatus\tdescription\n")
@@ -59,6 +64,10 @@ def make_workspace(ws, arm):
             shutil.copy(os.path.join(ROOT, "claude", "agents", f"{a}.md"), os.path.join(ws, ".claude", "agents"))
     if "researcher" in ARMS[arm]["agents"]:
         open(os.path.join(ws, "notes.md"), "w").write("# Lab notebook\n")
+        hook = os.path.join(ROOT, "claude", "hooks", "only_researcher_edits.py")
+        with open(os.path.join(ws, ".claude", "settings.json"), "w") as fh:
+            json.dump({"hooks": {"PreToolUse": [{"matcher": "Edit|Write|MultiEdit|Bash",
+                                                  "hooks": [{"type": "command", "command": hook}]}]}}, fh)
     run = lambda *c: subprocess.run(c, cwd=ws, check=True, capture_output=True)
     run("git", "init", "-q")
     run("git", "add", "-A")
@@ -73,28 +82,36 @@ def ground_truth(ws):
         meta = json.load(open(os.path.join(qdir, j, "meta.json")))
         rp = os.path.join(qdir, j, "result.json")
         res = json.load(open(rp)) if os.path.exists(rp) else {}
-        jobs.append({"id": j, "name": meta["name"], "state": meta["state"], **res})
+        jobs.append({"id": j, "name": meta["name"], "seed": meta.get("seed"), "state": meta["state"], **res})
     done = [j for j in jobs if j["state"] == "COMPLETED" and "val_bpb" in j]
-    return {"jobs": jobs, "n_completed": len(done),
-            "best_val_bpb": min((j["val_bpb"] for j in done), default=None),
-            "baseline_val_bpb": done[0]["val_bpb"] if done else None}
+    # multi-seed (heavy mode): an experiment's score is the mean over its seeds
+    groups = {}
+    for j in done:
+        key = re.sub(r"[-_.]?s(eed)?[-_]?\d+$", "", j["name"]) if j.get("seed") else j["id"]
+        groups.setdefault(key, []).append(j["val_bpb"])
+    scores = [sum(v) / len(v) for v in groups.values()]
+    return {"jobs": jobs, "n_completed": len(done), "n_experiments": len(groups),
+            "best_val_bpb": min(scores, default=None),
+            "baseline_val_bpb": scores[0] if scores else None}
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--arm", choices=ARMS, required=True)
     ap.add_argument("--seed", type=int, default=1)
+    ap.add_argument("--labour", choices=["light", "heavy"], default="light",
+                    help="light: tidy queue with a result command; heavy: busy shared cluster, 2 seeds/experiment")
     ap.add_argument("--port", type=int, default=8800)
     ap.add_argument("--effort", default="high")
     ap.add_argument("--timeout-min", type=float, default=75)
     ap.add_argument("--workdir", default=os.environ.get("MARX_WORKDIR", "/tmp/marx-ws"))
     a = ap.parse_args()
 
-    name = f"{a.arm}-s{a.seed}"
+    name = f"{a.labour}-{a.arm}-s{a.seed}"
     out = os.path.join(ROOT, "results", "runs", name)
     os.makedirs(out, exist_ok=True)
     ws = os.path.join(a.workdir, name)
-    make_workspace(ws, a.arm)
+    make_workspace(ws, a.arm, a.labour)
     cfg = ARMS[a.arm]
 
     ledger = os.path.join(out, "ledger.jsonl")
@@ -132,11 +149,11 @@ def main():
         if os.path.exists(os.path.join(ws, f)):
             shutil.copy(os.path.join(ws, f), os.path.join(out, f))
     gitlog = subprocess.run(["git", "log", "--oneline"], cwd=ws, capture_output=True, text=True).stdout
-    summary = {"arm": a.arm, "seed": a.seed, "main_model": cfg["main"], "agents": cfg["agents"],
+    summary = {"arm": a.arm, "seed": a.seed, "labour": a.labour, "main_model": cfg["main"], "agents": cfg["agents"],
                "effort": a.effort, "exit": rc, "wall_s": round(wall, 1), "git_log": gitlog.splitlines(),
                **ground_truth(ws)}
     json.dump(summary, open(os.path.join(out, "summary.json"), "w"), indent=1)
-    print(json.dumps({k: summary[k] for k in ("arm", "seed", "exit", "wall_s", "n_completed", "best_val_bpb")}))
+    print(json.dumps({k: summary[k] for k in ("labour", "arm", "seed", "exit", "wall_s", "n_completed", "best_val_bpb")}))
 
 
 if __name__ == "__main__":

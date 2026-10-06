@@ -22,6 +22,10 @@ The caller gives you: experiment number, a short name, and a one-line descriptio
    keep -> `git commit -qam "exp<N>: <description> val_bpb=<x>"`; discard -> `git checkout train.py`.
    Peek at `python jobq.py logs ID --tail 6` for the loss trajectory and throughput.
 
+If program.md asks for several seeds per experiment, submit one job per seed, wait for all of
+them, and use the mean val_bpb. If `jobq.py result` is unavailable, read the metrics from the
+end of the job log (`python jobq.py logs ID --tail 8`).
+
 Return at most 8 lines, nothing else:
 ```
 exp: <N> <name> | job(s): <ids, incl. NODE_FAIL resubmits>

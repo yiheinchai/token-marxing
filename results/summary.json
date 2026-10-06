@@ -1,0 +1,32 @@
+[
+ {
+  "labour": "light",
+  "arm": "cheap",
+  "seed": 0,
+  "exit": 0,
+  "wall_min": 11.860000000000001,
+  "n_completed": 5,
+  "best_val_bpb": 2.5658,
+  "baseline_val_bpb": 3.2896,
+  "cost_total": 0.1742937,
+  "cost_total_cheap_on_deepseek": 0.023329962,
+  "cost_cheap_model": 0.1742937,
+  "cost_opus": 0,
+  "opus_calls": 0,
+  "opus_out_tokens": 0,
+  "opus_in_tokens": 0,
+  "opus_cost_parts": {},
+  "opus_share_intellectual": null,
+  "opus_share_labour": null,
+  "opus_share_coordination": null,
+  "cost_by_model_label": {
+   "haiku:read": 0.04801130000000001,
+   "haiku:orchestrate": 0.07142189999999998,
+   "haiku:harness": 0.005653999999999999,
+   "haiku:bookkeep": 0.020396900000000003,
+   "haiku:code": 0.0229664,
+   "haiku:answer": 0.005843200000000001
+  },
+  "calls": 37
+ }
+]
