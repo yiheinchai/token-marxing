@@ -147,7 +147,7 @@ def main():
     json.dump(runs, open(os.path.join(ROOT, "results", "summary.json"), "w"), indent=1)
 
     order = ["solo", "delegate", "inverted", "inverted_unenforced", "cheap"]
-    groups = [(lab, a) for lab in ("light", "heavy") for a in order
+    groups = [(lab, a) for lab in ("light", "heavy", "long") for a in order
               if any(r["arm"] == a and r["labour"] == lab for r in runs)]
     agg = {}
     for lab, a in groups:
@@ -177,7 +177,7 @@ def main():
     L += ["", "## Per run", "",
           "| run | exit | total $ | total $ (DeepSeek cheap) | Opus $ | Opus cost parts (in / cache write / cache read / out) | "
           "Opus calls | best val_bpb (baseline) | jobs done |", "|---|---|---|---|---|---|---|---|---|"]
-    for r in sorted(runs, key=lambda r: (r["labour"] != "light", order.index(r["arm"]), r["seed"])):
+    for r in sorted(runs, key=lambda r: (["light", "heavy", "long"].index(r["labour"]), order.index(r["arm"]), r["seed"])):
         p = r["opus_cost_parts"]
         parts = " / ".join(fmt(p.get(k, 0)) for k in ("input", "cache_write", "cache_read", "output")) if p else "-"
         L.append(f"| {r['labour']}-{r['arm']}-s{r['seed']} | {r['exit']} | {fmt(r['cost_total'])} | "

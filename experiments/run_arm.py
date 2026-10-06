@@ -33,6 +33,15 @@ ARMS = {
     "cheap":    dict(main=CHEAP, agents=[],              system=None),
 }
 
+# "long": jobs outlast a single tool call, like hours-long training jobs vs Claude Code's
+# 10-minute Bash cap. Emulated by capping every shell command at 30 s (Claude Code env vars).
+BASH_CAP_MS = "30000"
+LONG_NOTE = """
+## Note on waiting
+Every shell command is killed after 30 seconds, while a job takes several minutes including
+queueing. You cannot wait for a job inside one command: poll its status repeatedly.
+"""
+
 PROMPT = "Read program.md and carry out the protocol in it, start to finish."
 
 # Env vars that would tie the child CLI to the session running this script.
@@ -50,9 +59,12 @@ def make_workspace(ws, arm, labour):
     for f in ("prepare.py", "train.py", "check.py", "jobq.py"):
         shutil.copy(os.path.join(bench, f), ws)
     program = "program.md" if labour == "light" else "program_heavy.md"
-    shutil.copy(os.path.join(bench, program), os.path.join(ws, "program.md"))
+    text = open(os.path.join(bench, program)).read()
+    if labour == "long":
+        text += LONG_NOTE
+    open(os.path.join(ws, "program.md"), "w").write(text)
     with open(os.path.join(ws, "cluster.json"), "w") as fh:
-        json.dump({"mode": labour}, fh)
+        json.dump({"mode": "light" if labour == "light" else "heavy"}, fh)
     shutil.copytree(os.path.join(bench, "data"), os.path.join(ws, "data"))
     with open(os.path.join(ws, "results.tsv"), "w") as fh:
         fh.write("exp\tjob\tval_bpb\tstatus\tdescription\n")
@@ -99,8 +111,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--arm", choices=ARMS, required=True)
     ap.add_argument("--seed", type=int, default=1)
-    ap.add_argument("--labour", choices=["light", "heavy"], default="light",
-                    help="light: tidy queue with a result command; heavy: busy shared cluster, 2 seeds/experiment")
+    ap.add_argument("--labour", choices=["light", "heavy", "long"], default="light",
+                    help="light: tidy queue with a result command; heavy: busy shared cluster, 2 seeds/experiment; "
+                         "long: heavy + jobs that outlast a single (30 s) shell command")
     ap.add_argument("--port", type=int, default=8800)
     ap.add_argument("--effort", default="high")
     ap.add_argument("--timeout-min", type=float, default=75)
@@ -126,6 +139,8 @@ def main():
     env = {k: v for k, v in os.environ.items() if k not in SCRUB}
     env.update(ANTHROPIC_BASE_URL=f"http://127.0.0.1:{srv.server_port}", IS_SANDBOX="1",
                CLAUDE_CODE_DISABLE_BACKGROUND_TASKS="1")
+    if a.labour == "long":
+        env.update(BASH_MAX_TIMEOUT_MS=BASH_CAP_MS, BASH_DEFAULT_TIMEOUT_MS=BASH_CAP_MS)
     cmd = ["claude", "-p", PROMPT, "--model", cfg["main"], "--effort", a.effort,
            "--output-format", "stream-json", "--verbose", "--no-session-persistence",
            "--strict-mcp-config", "--setting-sources", "project", "--dangerously-skip-permissions",
