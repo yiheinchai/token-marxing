@@ -3,14 +3,16 @@ results/summary.json and results/REPORT.md.
 
 Every API call in the ledger is joined (by message id) to the assistant message it produced
 in the transcript, and labelled by what that message *did*:
-  code         Edit/Write of train.py                         } "intellectual"
-  read         Read/Grep/Glob                                 }
-  answer       no tool call (reasoning, final summary)        }
-  orchestrate  Bash running check.py / jobq.py / sleep / logs } "labour"
-  bookkeep     git, results.tsv, notes.md writes              }
-  delegate     calling a subagent                               "coordination"
+  code         editing train.py (Edit/Write, sed -i, heredocs)  } "intellectual"
+  read         Read/Grep/Glob, cat/ls/git diff of sources       }
+  answer       no tool call (reasoning, final summary)          }
+  orchestrate  running check.py / jobq.py, sleep/poll, job logs } "labour"
+  bookkeep     git commit/checkout, results.tsv, notes.md       }
+  delegate     calling a subagent                                 "coordination"
   harness      calls Claude Code makes on its own (titles, summaries...)
-A call's whole cost (re-reading its context + writing its output) is charged to its label.
+A call's whole cost (re-reading its context + writing its output) is charged to what it did;
+a call that did several kinds of work (e.g. `sed -i ... train.py && python check.py && submit`)
+splits its cost evenly between them.
 """
 import collections
 import glob
@@ -25,33 +27,32 @@ sys.path.insert(0, ROOT)
 from marx.prices import usage_cost  # noqa: E402
 
 BUCKET = {"code": "intellectual", "read": "intellectual", "answer": "intellectual",
-          "orchestrate": "labour", "bookkeep": "labour", "other": "labour",
+          "orchestrate": "labour", "bookkeep": "labour",
           "delegate": "coordination", "harness": "harness"}
-ORCH = re.compile(r"check\.py|jobq\.py|\bsleep\b|\buntil\b|\bwhile\b|log\.txt|\.jobs")
-BOOK = re.compile(r"\bgit\b|results\.tsv|notes\.md")
+ORCH = re.compile(r"python3?\s+(\S*/)?(check|jobq)\.py|\bsleep\b|\buntil\b|log\.txt|\.jobs/")
+BOOK = re.compile(r"git (commit|checkout|add|reset|stash)|>>\s*results\.tsv|results\.tsv\s*<<|notes\.md")
+CODE = re.compile(r"(sed\s+-i[^|;&]*train\.py|>\s*train\.py|tee\s+train\.py|"
+                  r"train\.py[\s\S]*(\.write\(|open\([^)]*['\"]w))")
 
 
 def label(tools):
-    names = [t["name"] for t in tools]
+    """{label: weight} for one API call; a call doing several kinds of work splits its cost evenly."""
     if not tools:
-        return "answer"
-    if any(n in ("Agent", "Task") for n in names):
-        return "delegate"
+        return {"answer": 1.0}
+    if any(t["name"] in ("Agent", "Task") for t in tools):
+        return {"delegate": 1.0}
+    found = set()
     for t in tools:
-        if t["name"] in ("Edit", "Write", "MultiEdit") and str(t["input"].get("file_path", "")).endswith("train.py"):
-            return "code"
-    if any(n in ("Edit", "Write", "MultiEdit") for n in names):
-        return "bookkeep"
-    cmds = " ; ".join(t["input"].get("command", "") for t in tools if t["name"] == "Bash")
-    if cmds:
-        if ORCH.search(cmds):
-            return "orchestrate"
-        if BOOK.search(cmds):
-            return "bookkeep"
-        if re.match(r"\s*(cat|head|tail|ls|grep|wc|python3? -c)", cmds):
-            return "read"
-        return "other"
-    return "read"
+        name, inp = t["name"], t["input"]
+        if name in ("Edit", "Write", "MultiEdit", "NotebookEdit"):
+            found.add("code" if str(inp.get("file_path", "")).endswith("train.py") else "bookkeep")
+        elif name == "Bash":
+            cmd = inp.get("command", "")
+            kinds = {k for k, rx in (("code", CODE), ("orchestrate", ORCH), ("bookkeep", BOOK)) if rx.search(cmd)}
+            found |= kinds or {"read"}
+        else:  # Read, Grep, Glob
+            found.add("read")
+    return {k: 1.0 / len(found) for k in found}
 
 
 def load_run(d):
@@ -77,12 +78,12 @@ def load_run(d):
         if e.get("status") != 200:
             continue
         m = msgs.get(e.get("message_id"))
-        lab = label(m["tools"]) if m else "harness"
+        labs = label(m["tools"]) if m else {"harness": 1.0}
         agent = "harness" if not m else ("main" if not m["parent"] else sub_type.get(m["parent"], "subagent"))
         cost = usage_cost(e["served_model"], e["usage"])
         alt = usage_cost("deepseek-flash", e["usage"]) if e["served_model"].startswith("claude-haiku") else cost
         u = e["usage"]
-        calls.append({"model": e["served_model"], "agent": agent, "label": lab, "bucket": BUCKET[lab],
+        calls.append({"model": e["served_model"], "agent": agent, "labels": labs,
                       "cost": sum(cost.values()), "cost_parts": cost, "cost_deepseek_cheap": sum(alt.values()),
                       "in_tokens": (u.get("input_tokens") or 0) + (u.get("cache_read_input_tokens") or 0)
                       + (u.get("cache_creation_input_tokens") or 0),
@@ -99,13 +100,15 @@ def run_metrics(summ, calls):
     opus_cost = sum(c["cost"] for c in opus)
     by_bucket = collections.Counter()
     for c in opus:
-        by_bucket[c["bucket"]] += c["cost"]
+        for lab, w in c["labels"].items():
+            by_bucket[BUCKET[lab]] += w * c["cost"]
     parts = collections.Counter()
     for c in opus:
         parts.update(c["cost_parts"])
     by_model_label = collections.defaultdict(float)
     for c in calls:
-        by_model_label[f"{short(c['model'])}:{c['label']}"] += c["cost"]
+        for lab, w in c["labels"].items():
+            by_model_label[f"{short(c['model'])}:{lab}"] += w * c["cost"]
     return {
         "labour": summ.get("labour", "light"), "arm": summ["arm"], "seed": summ["seed"], "exit": summ["exit"], "wall_min": summ["wall_s"] / 60,
         "n_completed": summ["n_completed"], "best_val_bpb": summ["best_val_bpb"],
@@ -143,7 +146,7 @@ def main():
             runs.append(run_metrics(*load_run(d)))
     json.dump(runs, open(os.path.join(ROOT, "results", "summary.json"), "w"), indent=1)
 
-    order = ["solo", "delegate", "inverted", "cheap"]
+    order = ["solo", "delegate", "inverted", "inverted_unenforced", "cheap"]
     groups = [(lab, a) for lab in ("light", "heavy") for a in order
               if any(r["arm"] == a and r["labour"] == lab for r in runs)]
     agg = {}

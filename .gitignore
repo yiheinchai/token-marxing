@@ -4,3 +4,6 @@ bench/.jobs/
 *.pyc
 # in-progress run logs; un-ignored when the batch finishes
 results/runs/
+results/REPORT.md
+results/summary.json
+results/aggregate.json
