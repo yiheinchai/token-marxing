@@ -1,0 +1,6 @@
+{
+  "routes": [
+    {"name": "cheap-labour", "match": "claude-haiku-*", "upstream": "https://api.anthropic.com"},
+    {"name": "intellect", "match": "*", "upstream": "https://api.anthropic.com"}
+  ]
+}

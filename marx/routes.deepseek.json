@@ -1,0 +1,8 @@
+{
+  "routes": [
+    {"name": "cheap-labour", "match": "claude-haiku-*",
+     "upstream": "https://api.deepseek.com/anthropic", "api_key_env": "DEEPSEEK_API_KEY",
+     "model": "deepseek-flash"},
+    {"name": "intellect", "match": "*", "upstream": "https://api.anthropic.com"}
+  ]
+}
