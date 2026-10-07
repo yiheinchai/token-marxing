@@ -62,6 +62,9 @@ class Route:
         # last `marx-mode <mode>` shell command in the history. Each mode is a route of its own.
         sw = spec.get("switch")
         self.modes = {m: Route(sub, f"{self.name}:{m}") for m, sub in sw["modes"].items()} if sw else None
+        self.mode = None
+        for m, sub in (self.modes or {}).items():
+            sub.mode = m
         self.default_mode = sw.get("default") if sw else None
 
     def matches(self, model):
@@ -88,6 +91,8 @@ class Route:
                     msg["content"] = kept or [{"type": "text", "text": "."}]
         if self.fold_system_messages and payload.get("messages"):
             payload["messages"] = fold_system_messages(payload["messages"])
+        if self.mode and payload.get("messages"):
+            anchor_cache(payload["messages"], self.mode)
         if self.turn_note and payload.get("messages") and payload["messages"][-1].get("role") == "user":
             last = payload["messages"][-1]
             last["content"] = _blocks(last["content"]) + [
@@ -121,6 +126,44 @@ def fold_system_messages(messages):
         else:
             out.append(dict(msg, role=role, content=blocks))
     return out
+
+
+def _mode_switches(msg):
+    for block in msg.get("content") if isinstance(msg.get("content"), list) else []:
+        if block.get("type") == "tool_use":
+            m = MODE_RE.search(str((block.get("input") or {}).get("command", "")))
+            if m:
+                yield m.group(1)
+
+
+def anchor_cache(messages, mode, lookback=15):
+    """Re-anchor a prompt-cache breakpoint where this mode's model last left off.
+
+    The API finds an earlier cached prefix only within ~20 content blocks of a breakpoint, and
+    Claude Code puts its message breakpoints on the last two messages. After a long streak of the
+    other model's turns, the current model's own cached prefix is out of reach and the whole
+    conversation would be written to its cache again. Its previous request ended right before
+    the message in which it handed over, so move Claude Code's second message breakpoint there.
+    """
+    handoff = next((i for i in range(len(messages) - 1, -1, -1)
+                    if messages[i].get("role") == "assistant"
+                    and any(m != mode for m in _mode_switches(messages[i]))), None)
+    if not handoff:
+        return
+    target = handoff - 1
+    blocks_after = sum(len(m["content"]) if isinstance(m.get("content"), list) else 1
+                       for m in messages[target + 1:])
+    if blocks_after <= lookback or not isinstance(messages[target].get("content"), list) \
+            or not messages[target]["content"]:
+        return
+    marked = [(i, b) for i, m in enumerate(messages) if isinstance(m.get("content"), list)
+              for b in m["content"] if isinstance(b, dict) and "cache_control" in b]
+    if not marked:
+        return
+    cc = dict(marked[-1][1]["cache_control"])
+    if len(marked) >= 2:                       # free a breakpoint: the max is 4 per request
+        marked[0][1].pop("cache_control")
+    messages[target]["content"][-1]["cache_control"] = cc
 
 
 def last_mode(messages):

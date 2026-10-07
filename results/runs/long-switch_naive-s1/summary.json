@@ -1,5 +1,5 @@
 {
- "arm": "switch",
+ "arm": "switch_naive",
  "seed": 1,
  "labour": "long",
  "main_model": "claude-opus-5-5",
