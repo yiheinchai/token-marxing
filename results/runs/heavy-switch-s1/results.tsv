@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001,j003	3.4657	keep	baseline (CausalMLP ctx8, SGD lr1e-2 mom0.9)
+1	j004,j005	2.4816	keep	AdamW lr3e-3 wd0.01 instead of SGD lr1e-2 mom0.9
+2	j006,j008	2.3868	keep	AdamW peak lr 1e-2 with cosine decay to 0 over 60s budget
+3	j009,j010	2.5208	discard	context 8->16 bytes with embed 24->16 (fc1 input 192->256)
+4	j011,j012	2.3548	keep	hidden activation tanh -> GELU (on top of exp 2 AdamW cosine lr1e-2)
