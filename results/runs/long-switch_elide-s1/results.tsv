@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001,j003	3.4719	keep	baseline: CausalMLP ctx8, SGD lr1e-2 mom0.9
+1	j004,j005	2.4696	keep	AdamW lr3e-3 no weight decay
+2	j006,j008	2.5387	discard	CONTEXT 16 (slower convergence, +params to 170k)
+3	j009,j010	2.5873	discard	linear LR decay 3e-3->0 over budget (AdamW, ctx8)
+4	j011,j012	2.4425	keep	AdamW LR 6e-3 (ctx8, no schedule)

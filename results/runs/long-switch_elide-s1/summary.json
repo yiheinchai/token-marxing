@@ -1,0 +1,136 @@
+{
+ "arm": "switch_elide",
+ "seed": 1,
+ "labour": "long",
+ "main_model": "claude-opus-5-5",
+ "agents": [],
+ "effort": "high",
+ "exit": 0,
+ "wall_s": 1558.4,
+ "git_log": [
+  "1f8bf28 exp4: AdamW LR 6e-3 val_bpb=2.4425",
+  "9856722 exp3: linear LR decay val_bpb=2.5873 (discard)",
+  "478e322 exp2: CONTEXT 16 val_bpb=2.5387 (discard)",
+  "bf406b5 exp1: AdamW lr3e-3 no weight decay val_bpb=2.4696",
+  "4b66674 exp0: baseline val_bpb=3.4719",
+  "6edddad baseline"
+ ],
+ "jobs": [
+  {
+   "id": "j001",
+   "name": "baseline-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 822.0,
+   "train_time_s": 60.0,
+   "val_bpb": 3.4888
+  },
+  {
+   "id": "j002",
+   "name": "baseline-s2",
+   "seed": 2,
+   "state": "NODE_FAIL"
+  },
+  {
+   "id": "j003",
+   "name": "baseline-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 840.0,
+   "train_time_s": 60.1,
+   "val_bpb": 3.4551
+  },
+  {
+   "id": "j004",
+   "name": "adamw-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 787.0,
+   "train_time_s": 60.1,
+   "val_bpb": 2.4706
+  },
+  {
+   "id": "j005",
+   "name": "adamw-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 830.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.4685
+  },
+  {
+   "id": "j006",
+   "name": "ctx16-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 170496.0,
+   "steps": 700.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.5293
+  },
+  {
+   "id": "j007",
+   "name": "ctx16-s2",
+   "seed": 2,
+   "state": "NODE_FAIL"
+  },
+  {
+   "id": "j008",
+   "name": "ctx16-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 170496.0,
+   "steps": 656.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.5481
+  },
+  {
+   "id": "j009",
+   "name": "lrdecay-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 847.0,
+   "train_time_s": 60.1,
+   "val_bpb": 2.5783
+  },
+  {
+   "id": "j010",
+   "name": "lrdecay-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 816.0,
+   "train_time_s": 60.1,
+   "val_bpb": 2.5963
+  },
+  {
+   "id": "j011",
+   "name": "lr6e-3-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 813.0,
+   "train_time_s": 60.1,
+   "val_bpb": 2.4232
+  },
+  {
+   "id": "j012",
+   "name": "lr6e-3-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 738.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.4617
+  }
+ ],
+ "n_completed": 10,
+ "n_experiments": 5,
+ "best_val_bpb": 2.44245,
+ "baseline_val_bpb": 3.4719499999999996
+}
