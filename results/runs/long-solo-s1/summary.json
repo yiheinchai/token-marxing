@@ -1,0 +1,124 @@
+{
+ "arm": "solo",
+ "seed": 1,
+ "labour": "long",
+ "main_model": "claude-opus-5-5",
+ "agents": [],
+ "effort": "high",
+ "exit": 0,
+ "wall_s": 1254.2,
+ "git_log": [
+  "2cfafa5 exp4: AdamW constant LR 6e-3 val_bpb=2.3525",
+  "6b1ceb9 exp1: AdamW lr 3e-3 instead of SGD momentum val_bpb=2.3628",
+  "c589b48 exp0: baseline val_bpb=3.2567",
+  "9f55c51 baseline"
+ ],
+ "jobs": [
+  {
+   "id": "j001",
+   "name": "baseline",
+   "seed": 0,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1482.0,
+   "train_time_s": 60.0,
+   "val_bpb": 3.2567
+  },
+  {
+   "id": "j002",
+   "name": "adamw-s1",
+   "seed": 1,
+   "state": "NODE_FAIL"
+  },
+  {
+   "id": "j003",
+   "name": "adamw-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1783.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.3802
+  },
+  {
+   "id": "j004",
+   "name": "adamw-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1779.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.3454
+  },
+  {
+   "id": "j005",
+   "name": "big-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 303744.0,
+   "steps": 886.0,
+   "train_time_s": 60.1,
+   "val_bpb": 2.4083
+  },
+  {
+   "id": "j006",
+   "name": "big-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 303744.0,
+   "steps": 792.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.4243
+  },
+  {
+   "id": "j007",
+   "name": "cosine-s1",
+   "seed": 1,
+   "state": "NODE_FAIL"
+  },
+  {
+   "id": "j008",
+   "name": "cosine-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1701.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.4226
+  },
+  {
+   "id": "j009",
+   "name": "cosine-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1750.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.3884
+  },
+  {
+   "id": "j010",
+   "name": "lr6e-3-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1758.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.3416
+  },
+  {
+   "id": "j011",
+   "name": "lr6e-3-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1781.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.3634
+  }
+ ],
+ "n_completed": 9,
+ "n_experiments": 5,
+ "best_val_bpb": 2.3525,
+ "baseline_val_bpb": 3.2567
+}

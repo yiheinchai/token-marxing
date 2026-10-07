@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001	3.2567	keep	baseline: ctx-8 MLP, SGD momentum lr 1e-2
+1	j004,j003	2.3628	keep	AdamW lr 3e-3 instead of SGD momentum lr 1e-2
+2	j005,j006	2.4163	discard	bigger MLP: context 16, embed 32, hidden 384 (too slow, ~840 steps)
+3	j009,j008	2.4055	discard	warmup 5% + cosine LR decay to 5% (decay hurts in this undertrained regime)
+4	j010,j011	2.3525	keep	AdamW constant LR 6e-3 (up from 3e-3)
