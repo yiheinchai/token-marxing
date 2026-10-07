@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001,j003	3.4682	keep	baseline (CausalMLP ctx8, SGD lr1e-2 mom0.9)
+1	j004,j005	2.4608	keep	AdamW lr3e-3 wd0
+2	j006,j008	2.5898	discard	cosine LR decay 3e-3 to 0
+3	j009,j010	2.4308	keep	AdamW lr8e-3
+4	j011,j012	2.5238	discard	Context 16 bytes
