@@ -1,2 +1,0 @@
-exp	job	val_bpb	status	description
-0	j001,j003	3.4905	keep	baseline: CausalMLP ctx8, SGD lr1e-2 momentum
