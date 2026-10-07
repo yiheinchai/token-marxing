@@ -36,6 +36,10 @@ ARMS = {
     # one conversation, the model swapped per turn by the router (`marx-mode think|labour`)
     "switch":   dict(main=OPUS,  agents=[],              system="CLAUDE.switch.md",
                      routes="routes.switch.anthropic.json"),
+    # with Claude Haiku 5.5 (released Oct 2026) as the cheap model, at its real price
+    "switch_elide_h55": dict(main=OPUS, agents=[],      system="CLAUDE.switch.md",
+                     routes="routes.switch_elide.haiku55.json"),
+    "cheap_h55": dict(main="claude-haiku-5-5", agents=[], system=None),
     # same, but Opus sees each labour streak only as the operator's hand-back report
     "switch_elide": dict(main=OPUS, agents=[],          system="CLAUDE.switch.md",
                      routes="routes.switch_elide.anthropic.json"),

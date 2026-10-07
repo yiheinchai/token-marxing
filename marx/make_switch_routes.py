@@ -19,10 +19,16 @@ TURN_NOTE = ("You are now the OPERATOR (cheap model); the THINKER handed the con
 # What the cheap upstream needs changed in Claude Code's Opus-shaped requests.
 CHEAP_COMPAT = {"drop_fields": ["thinking", "output_config", "context_management"], "strip_thinking": True,
                 "fold_system_messages": True, "max_tokens": 32000}
+HANDOFF_NOTE = TURN_NOTE
 CHEAP = {
-    "anthropic": {"upstream": "https://api.anthropic.com", "model": "claude-haiku-4-5-20251001"},
-    "deepseek": {"upstream": "https://api.deepseek.com/anthropic", "api_key_env": "DEEPSEEK_API_KEY",
-                 "model": "deepseek-flash"},
+    # Haiku 4.5 (used in the first experiments): needs request rewrites; per-turn role note
+    "anthropic": dict({"upstream": "https://api.anthropic.com", "model": "claude-haiku-4-5-20251001"},
+                      **CHEAP_COMPAT, turn_note=TURN_NOTE),
+    # Haiku 5.5 takes Claude Code's Opus-shaped requests as they are; the role note is pinned to
+    # each hand-off so the history it sees never changes (it has preserved-thinking checks too)
+    "haiku55": {"upstream": "https://api.anthropic.com", "model": "claude-haiku-5-5", "handoff_note": HANDOFF_NOTE},
+    "deepseek": dict({"upstream": "https://api.deepseek.com/anthropic", "api_key_env": "DEEPSEEK_API_KEY",
+                      "model": "deepseek-flash"}, **CHEAP_COMPAT, handoff_note=HANDOFF_NOTE),
 }
 
 
@@ -31,7 +37,7 @@ def config(provider, elide):
     think = {"upstream": "https://api.anthropic.com", "system_append": THINKER}
     if elide:
         think["elide_other_modes"] = True
-    labour = dict(CHEAP[provider], **CHEAP_COMPAT, system_append=operator, turn_note=TURN_NOTE)
+    labour = dict(CHEAP[provider], system_append=operator)
     return {"routes": [
         {"name": "main", "match": "claude-opus-*",
          "switch": {"default": "think", "modes": {"think": think, "labour": labour}}},

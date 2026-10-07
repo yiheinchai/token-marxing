@@ -58,6 +58,10 @@ class Route:
         # preserved-thinking checks: the next request sends that message without the note,
         # which those models would treat as an edit of history.
         self.turn_note = spec.get("turn_note")
+        # Note appended to the message right after each hand-off INTO this mode. It is placed the
+        # same way on every request, so unlike turn_note it never looks like an edit of history
+        # (safe for models with preserved-thinking checks).
+        self.handoff_note = spec.get("handoff_note")
         # Show this model the other mode's streaks only as the hand-back message (deterministically,
         # so its cache and preserved-thinking checks are unaffected): what it skips is labour it
         # never saw, after its own last turn.
@@ -99,6 +103,13 @@ class Route:
             payload["messages"] = elide_other_modes(payload["messages"], self.mode)
         if self.mode and payload.get("messages"):
             anchor_cache(payload["messages"], self.mode)
+        if self.mode and self.handoff_note and payload.get("messages"):
+            msgs = payload["messages"]
+            for i, msg in enumerate(msgs[:-1]):
+                if msg.get("role") == "assistant" and self.mode in _mode_switches(msg) \
+                        and msgs[i + 1].get("role") == "user":
+                    msgs[i + 1] = dict(msgs[i + 1], content=_blocks(msgs[i + 1]["content"]) + [
+                        {"type": "text", "text": f"<system-reminder>{self.handoff_note}</system-reminder>"}])
         if self.turn_note and payload.get("messages") and payload["messages"][-1].get("role") == "user":
             last = payload["messages"][-1]
             last["content"] = _blocks(last["content"]) + [

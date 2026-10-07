@@ -83,7 +83,7 @@ def load_run(d):
         labs = label(m["tools"]) if m else {"harness": 1.0}
         agent = "harness" if not m else ("main" if not m["parent"] else sub_type.get(m["parent"], "subagent"))
         cost = usage_cost(e["served_model"], e["usage"])
-        alt = usage_cost("deepseek-flash", e["usage"]) if e["served_model"].startswith("claude-haiku") else cost
+        alt = usage_cost("deepseek-flash", e["usage"]) if e["served_model"].startswith("claude-haiku-4-5") else cost
         u = e["usage"]
         calls.append({"model": e["served_model"], "agent": agent, "labels": labs,
                       "cost": sum(cost.values()), "cost_parts": cost, "cost_deepseek_cheap": sum(alt.values()),
@@ -152,7 +152,7 @@ def main():
             runs.append(run_metrics(*load_run(d)))
     json.dump(runs, open(os.path.join(ROOT, "results", "summary.json"), "w"), indent=1)
 
-    order = ["solo", "delegate", "switch", "switch_elide", "switch_naive", "inverted", "inverted_unenforced", "cheap"]
+    order = ["solo", "delegate", "switch", "switch_elide", "switch_elide_h55", "cheap_h55", "switch_naive", "inverted", "inverted_unenforced", "cheap"]
     groups = [(lab, a) for lab in ("light", "heavy", "long") for a in order
               if any(r["arm"] == a and r["labour"] == lab for r in runs)]
     agg = {}
