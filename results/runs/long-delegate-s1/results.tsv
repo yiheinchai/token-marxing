@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001,j003	3.3995	keep	unmodified baseline (Bengio MLP ctx8, SGD momentum)
+1	j004,j005	2.4220	keep	switch SGD(lr 1e-2, mom 0.9) to AdamW lr 3e-3 betas (0.9,0.99) wd 0
+2	j006,j008	2.4985	discard	AdamW + 30-step warmup and linear wall-clock decay to 0.1x LR
+3	j009,j010	2.4289	discard	AdamW peak LR 3e-3 -> 1e-2 (constant, no schedule)
+4	j011,j012	2.4923	discard	MLP left context 8 -> 16 bytes (AdamW lr 3e-3)
