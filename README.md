@@ -4,108 +4,127 @@
 
 When Claude Code runs an autoresearch loop, Opus spends most of its money on **labour**:
 running `.py` files, e2e checks, queueing jobs, waiting for jobs, reading logs, `git`.
-token-marxing gives that labour to a cheap model (DeepSeek V4.1 Flash, Haiku, ...) and
-keeps Opus for the **intellectual work**: deciding what to try and writing the PyTorch code.
+token-marxing hands that labour to a cheap model (DeepSeek V4.1 Flash, Haiku, ...) **inside the
+same chat**, and switches back to Opus for the **intellectual work**: deciding what to try and
+writing the PyTorch code.
 
-It has two parts:
+How it works:
 
-1. **A division of labour inside Claude Code**: Opus stays the main agent and hands every
-   "check, submit, wait, record" cycle to an [`operator`](claude/agents/operator.md) subagent
-   on the cheap slot, which reports back in ≤8 lines. The repo also has the inverted form, where
-   the cheap model drives and calls an Opus [`researcher`](claude/agents/researcher.md). It works,
-   but it is not recommended (see results).
-2. **[`marx/router.py`](marx/router.py)**: a stdlib-only proxy you point `ANTHROPIC_BASE_URL` at.
-   It routes each request by model name. Requests Claude Code sends to its `haiku` slot go to
-   **DeepSeek** (which serves an Anthropic-compatible API), and Opus requests go to Anthropic.
-   It writes a per-call usage and cost ledger, which is how every number below was measured.
+- **[`marx/router.py`](marx/router.py)** is a stdlib-only proxy that you point `ANTHROPIC_BASE_URL`
+  at. For each request of the main conversation it picks the model from the conversation itself.
+  The agent hands over with a one-line shell command:
+  `marx-mode labour "exp 3, ctx16, …"` gives the next turns to the cheap model, and
+  `marx-mode think "<report>"` gives them back to Opus. Both models work in one chat history.
+  The router also writes a per-call usage and cost ledger, which is how every number below was
+  measured.
+- **Elide**, the recommended mode: Opus sees each labour streak as just the operator's hand-back
+  report, while the cheap model sees everything. Without this, Opus pays to ingest every line of
+  polling output.
+- What made it work reliably is described in [Making one chat work](#making-one-chat-work):
+  a Stop hook so the cheap model can't end the session, prompt-cache re-anchoring on each
+  switch, and an operator playbook.
+- For comparison, the repo also has a **subagent** version, where the operator runs in its own
+  chat and returns a short report ([`claude/agents/operator.md`](claude/agents/operator.md)),
+  and an inverted version (the cheap model drives and calls an Opus researcher), which is not
+  recommended.
 
 ## Results
 
 A toy autoresearch task runs on CPU in [`bench/`](bench/). The task is byte-level language
 modelling on Python source with a 60 s training budget. An agent gets a baseline plus 4
 experiments, each with a fixed protocol: e2e check, submit to a simulated cluster queue, wait,
-read metrics, log, git keep/discard. Each run is a real headless Claude Code session. Opus 5.5
-does the research. The cheap slot was **Haiku 4.5**, because this environment has no DeepSeek
-key, and every one of those calls is also repriced at DeepSeek V4.1 Flash rates from its exact
-token counts. The labour load was varied:
+read metrics, log, git keep/discard. Every run is a real headless Claude Code session with Opus 5.5
+doing the research. The cheap model was **Haiku 4.5**, because this environment has no DeepSeek
+key, and every cheap call is also repriced at DeepSeek V4.1 Flash rates from its exact token counts.
 
-- **light**: a tidy queue with a `result` command. Jobs finish inside one shell call, so a
-  single `until …; do sleep 15; done` loop covers the whole wait.
 - **heavy**: a busy shared cluster. Each experiment needs 2 seeds, there is no `result` command
   (metrics must be read from the logs), logs are spammed with heartbeats, and 2 node failures
   force resubmits.
-- **long jobs**: the heavy cluster, plus every shell command is killed after 30 s. This is how
-  real autoresearch looks: training jobs last minutes to hours, but a Claude Code tool call
-  can wait at most 10 minutes, so the agent has to come back and poll repeatedly.
+- **long jobs**: the same cluster, plus every shell command is killed after 30 s. This is what
+  real autoresearch looks like: jobs last minutes to hours, but a Claude Code tool call can wait
+  at most 10 minutes, so somebody has to keep coming back to poll.
+- **light**: a tidy queue where waiting fits in one shell command. It was only run with the
+  first two setups.
 
 ![cost by arm](results/cost_by_arm.png)
 
-Mean $ per run (2 runs per cell), measured through the router:
+Mean $ per run, with the cheap model priced as DeepSeek V4.1 Flash:
 
-| condition | | Opus alone | Opus + operator | Δ |
+| | Opus alone | Operator subagent | One chat, full history | **One chat + elide** |
 |---|---|---|---|---|
-| light | Opus $ (labour share) | 0.37 (61%) | 0.31 (0%) | **−16%** Opus |
-| | total $, cheap = DeepSeek V4.1 Flash | 0.37 | 0.34 | −8% |
-| | total $, cheap = Haiku 4.5 | 0.37 | 0.45 | +22% |
-| heavy | Opus $ (labour share) | 0.52 (63%) | 0.42 (3%) | **−19%** Opus |
-| | total $, cheap = DeepSeek | 0.52 | 0.47 | −10% |
-| | total $, cheap = Haiku | 0.52 | 0.67 | +29% |
-| **long jobs** | Opus $ (labour share) | 0.96 (**80%**) | 0.39 (4%) | **−59%** Opus |
-| | total $, cheap = DeepSeek | 0.96 | **0.46** | **−52%** |
-| | total $, cheap = Haiku | 0.96 | 0.81 | −16% |
+| heavy: total $ | 0.49 | 0.43 | 0.54 | **0.30 (−39%)** |
+| long jobs: total $ | 0.97 | 0.46 | 0.60 | **0.29 (−70%)** |
+| Opus $ (heavy / long) | 0.49 / 0.97 | 0.38 / 0.39 | 0.49 / 0.56 | **0.26 / 0.25** |
+| Opus $ spent on intellectual work | 16-32% | 59-60% | 94-96% | **95-96%** |
+| Opus calls per run (heavy / long) | 26 / 53 | 21 / 19 | 12 / 12 | 14 / 14 |
+| runs | 3 / 3 | 3 / 3 | 2 / 2 | 2 / 2 |
 
-Best val_bpb (lower is better; baseline ≈ 3.30) over the same 6 runs per arm:
-**Opus alone 2.359 ± 0.048**, **Opus + operator 2.395 ± 0.036**. That difference is not
-statistically significant (Welch t = 1.5). Both arms found the same main ideas (AdamW, a
-higher LR), and Opus thinks just as well when it reads a short report instead of logs.
-Possibly a small cost remains, because the report hides the loss curve. The cheap model on
-its own reached only **2.74** (2.57 / 3.02 / 2.65), so it cannot stand in for Opus on the
-thinking.
+**Research quality is unchanged.** Container restarts made the machine about a third slower
+partway through (≈830 vs ≈1,300 training steps per 60 s run), and val_bpb depends on that.
+So compare runs made on the slow machine only (best val_bpb, lower is better, baseline ≈ 3.48):
 
-Full tables: [`results/REPORT.md`](results/REPORT.md). Raw ledgers and transcripts:
+- Opus alone: 2.423, 2.433
+- Operator subagent: 2.425, 2.366
+- One chat: 2.355, 2.431, 2.435, 2.435
+- One chat + elide: 2.435, 2.426, 2.442, 2.430
+
+All four land around 2.43. Over the earlier runs on the fast machine, Opus alone (2.359, n=6) and
+the subagent (2.395, n=6) were also within noise of each other. The cheap model on its own
+reached only 2.74 (n=3), so it cannot stand in for Opus on the thinking.
+
+Full tables: [`results/REPORT.md`](results/REPORT.md). Raw ledgers and transcripts for every run:
 [`results/runs/`](results/runs/).
 
 ### What the experiments say
 
-1. **Your ~50% figure is real.** Opus alone spent 61% / 63% / 80% of its dollars on labour
-   in the light / heavy / long-jobs conditions. With the operator, Opus's labour share drops
-   to 0-4% in every condition.
-2. **The savings depend on how many Opus turns the labour took, not on token type.** Every
-   Opus turn costs about **$0.02** at a 15-30k-token context, whatever it does: re-reading
-   the context, writing the new tool output into the cache, a few hundred output tokens.
-   Delegating still costs Opus a hand-off turn per experiment, on top of the turn that edits
-   the code and reads the previous report. Hand-offs plus Claude Code's own calls were about
-   30% of Opus's remaining spend. So when Opus could already do
-   check, submit and wait in one shell command (light, heavy), delegation saved only 16-19% of
-   Opus spend. When jobs outlast a tool call and Opus has to keep polling (long jobs: 56 Opus
-   calls a run instead of 22), it saved **59%**. Opus's bill then stops depending on how long
-   the jobs run.
-3. **The cheap model has to be really cheap.** At Haiku prices ($1/$5, $2/M for 1-hour cache
-   writes) the operator's own polling cost more than it saved, except in the long-jobs
-   condition. At DeepSeek V4.1 Flash prices ($0.30/$1.20, $0.006/M cache hits) labour is
-   almost free, and the end-to-end saving is close to the Opus saving: **−52%** with long jobs.
-4. **Keep Opus as the main loop. Don't make it a stateless subagent.** The inverted design
-   (cheap driver, Opus `researcher` subagent) matched Opus alone on quality (2.354, n=4) but
-   had the *highest* Opus bill: $0.56 a run on light and $0.70 on heavy, versus $0.37 / $0.52
-   for Opus alone. Every researcher call starts cold: it re-reads the program, code and notes,
-   pays the cache write again and re-thinks from scratch. It is also fragile. Prompt rules alone
-   failed: the Haiku driver skipped the researcher and wrote all the code itself, and that run
-   scored 3.18. A PreToolUse hook ([`only_researcher_edits.py`](claude/hooks/only_researcher_edits.py))
-   had to enforce the rule. After that, the driver still dictated the ideas until the prompts
-   forbade it.
-5. **Cost is mostly the input side, not output.** Opus's bill splits as ~40% output,
-   ~40% cache writes and ~20% cache reads; uncached input is ~2%. See the next section.
+1. **The ~50% figure is real.** Opus alone spent 61% (heavy) and 80% (long jobs) of its dollars
+   on labour. With one-chat switching, 95-96% of Opus's spend is intellectual work: deciding,
+   reading code, writing `train.py`.
+2. **Orchestration tokens do become Opus input tokens, but at the cache-write price.** In one
+   shared chat, Opus never generates the labour, but when it resumes it must read everything the
+   operator added. New context is written to Anthropic's prompt cache at 2x the input price
+   ($8/M on Opus 5.5 with Claude Code's 1-hour cache), not the $0.20/M read price. With long
+   jobs, the operator's polling added 30-40k tokens per experiment, so the full-history version
+   saved only 38%. Eliding the labour streaks from Opus's view cut each resume to ~500 new
+   tokens, and the saving rose to 70%.
+3. **One chat beat subagents** once labour was elided: 14 Opus calls per run instead of ~20, and
+   no hand-off overhead. Opus edits the code and runs `marx-mode labour` in the same turn. A
+   subagent hand-off costs Opus an extra turn and a bigger system prompt, about 30% of Opus's
+   remaining spend.
+4. **The cheap model has to be really cheap.** At Haiku prices ($1/$5, $2/M for 1-hour cache
+   writes) the operator's ~$0.30 of polling ate most of the saving: one chat + elide totalled
+   $0.58 / $0.57, versus $0.49 / $0.97 for Opus alone. At DeepSeek V4.1 Flash prices
+   ($0.30/$1.20 per M, $0.006/M cache hits) the same work costs about $0.04.
+5. **Don't flip it.** A cheap driver calling an Opus `researcher` subagent kept quality but cost
+   the *most* Opus ($0.56-0.70): every researcher call starts cold. Haiku also ignored the
+   delegation rule and wrote the code itself until a hook blocked it.
 
-### What to do in your autoresearch
+## Making one chat work
 
-- If your jobs run longer than one tool call (minutes to hours), use **Opus as the main loop
-  plus an `operator` subagent on DeepSeek**. That is the long-jobs setting, where this halves
-  the bill without hurting research quality.
-- Have Opus hand over a whole experiment, or several, in one operator call, so delegation
-  overhead stays at one hand-off turn per experiment.
-- The cheapest labour is labour no model does. A blocking `wait` command, or one polling loop
-  inside a single shell call, removes most polling turns for any model. That is why delegation
-  saved little in the light condition.
+Three things broke in the first one-chat runs. Each is now handled by the code and was
+verified in runs:
+
+- **The cheap model ended the session.** After recording a result, Haiku wrote "I need to wait
+  for the THINKER…" and ended its turn with plain text, which ends a headless session.
+  `marx-mode` now records the current mode in `.marx-mode`, and a **Stop hook**
+  ([`operator_hands_back.py`](claude/hooks/operator_hands_back.py)) refuses to stop in labour
+  mode and tells the operator to run `marx-mode think`.
+- **Opus lost its prompt cache on every switch.** Claude Code places its cache breakpoints on
+  the last two messages, and the API only looks back ~20 content blocks for an earlier cached
+  prefix. After a labour streak, Opus's cached prefix was out of reach, so it re-wrote the whole
+  conversation each time: **$1.87 of Opus for 14 calls** (arm `switch_naive`). The router now
+  moves one of Claude Code's message breakpoints to exactly where this model's previous request
+  ended (`anchor_cache`).
+- **The operator busy-polled.** Without instructions it ran `jobq.py status` back to back, up to
+  488 calls in one run. [`claude/OPERATOR.switch.md`](claude/OPERATOR.switch.md) gives it the
+  same playbook as the subagent operator, including "sleep before every poll".
+
+The cheap model also needs requests it can accept. For the labour route only, the router
+strips Opus's thinking blocks and Opus-only fields, caps `max_tokens`, folds Claude Code's
+mid-conversation `system` messages into user turns, and adds a role reminder to the newest
+message. Opus's own history is never edited. Elision only replaces turns that came after Opus's
+last message, and it does so identically on every request, so Opus 5.5's preserved-thinking
+checks and its prompt cache keep working.
 
 ## Why is input cheaper than output?
 
@@ -127,76 +146,69 @@ The reason is how the GPU works in each phase:
   so the provider only loads it. Writing the cache costs extra: 1.25x input for a 5-minute
   TTL, 2x for 1 hour (Claude Code uses the 1-hour TTL).
 
-### What that means for agent loops (a correction to the premise)
-
-The hope was that moving the labour would turn expensive Opus output tokens into cheap
-input tokens. That is not quite what happens. Every agent turn re-sends the whole
-conversation as input. A turn that only polls the queue writes ~150 output tokens, but it
-also re-reads 15-30k tokens of context and writes the new log output into the cache at $8/M.
-In the runs above that came to ~$0.02 per turn, of which output was under half. Orchestration
-is expensive because of **how many turns it takes × how big the context is**, and because the
-logs it reads pile into the context that every later Opus turn re-reads.
-
-So the saving does not come from converting token types. It comes from **Opus not taking
-those turns at all**. It sees an 8-line report instead of logs, so its context also stays
-small. The labour itself is then billed at the cheap model's rates. For DeepSeek V4.1 Flash
-that is 13-33x below Opus on fresh input and output and 33-67x below on cache hits
-(peak / off-peak).
+So in an agent loop the bill is mostly the input side. Every turn re-sends the whole
+conversation, and every new tool output is written into the cache once at $8/M, then read on
+every later turn. In these runs Opus's bill split as about 40% output, 40% cache writes and 20%
+cache reads; uncached input was ~2%. A turn that only polls the queue costs ~$0.02, and under
+half of that is output. That is why the savings come from **Opus taking fewer turns and seeing
+fewer tokens**, not from converting output into input.
 
 ## Use it on your own project
 
 ```bash
-# 1. the division of labour
-mkdir -p .claude/agents && cp claude/agents/operator.md .claude/agents/   # adapt its steps to your pipeline
-cat claude/CLAUDE.delegate.md >> CLAUDE.md
+# in your project, with this repo at $MARX
+cat $MARX/claude/CLAUDE.switch.md >> CLAUDE.md            # the hand-over protocol for both models
+export PATH=$MARX/bin:$PATH                                 # provides `marx-mode`
+mkdir -p .claude && cat > .claude/settings.json <<EOF
+{"hooks": {"Stop": [{"hooks": [{"type": "command", "command": "$MARX/claude/hooks/operator_hands_back.py"}]}]}}
+EOF
 
-# 2. route the cheap slot to DeepSeek (Opus keeps going to Anthropic)
+# route: Opus thinks, DeepSeek labours, one conversation
 export DEEPSEEK_API_KEY=...
-python -m marx.router --config marx/routes.deepseek.json --port 8787 --ledger ledger.jsonl &
+(cd $MARX && python -m marx.router --config marx/routes.switch_elide.deepseek.json --port 8787 --ledger ledger.jsonl &)
 ANTHROPIC_BASE_URL=http://127.0.0.1:8787 claude --model opus
 
-# 3. see where the money went
-python -m marx.report ledger.jsonl
-python -m marx.report ledger.jsonl --as-if 'claude-haiku-*=deepseek-flash'   # what-if repricing
+python -m marx.report $MARX/ledger.jsonl                    # where the money went
 ```
 
-`routes.deepseek.json` sends every `claude-haiku-*` request to
-`https://api.deepseek.com/anthropic` as `deepseek-flash`, using your DeepSeek key. Everything
-else passes through to Anthropic with your normal credentials. The `operator` subagent declares
-`model: haiku`, so its traffic goes to DeepSeek. Claude Code's own background calls on the haiku
-slot (titles, summaries) go there too. To use a different cheap provider, change `upstream`,
-`model` and `api_key_env`. A route can also set `drop_fields` (request keys to strip) and
-`drop_betas` for upstreams that reject Anthropic-only parameters. `routes.anthropic.json`
-routes everything to Anthropic, which gives you the ledger alone.
+Adapt the operator's playbook to your pipeline in `claude/OPERATOR.switch.md` (what to run,
+how to wait, what to report), then run `python -m marx.make_switch_routes` to regenerate the
+route configs. To use another cheap provider, change `CHEAP` in that script. Any upstream that
+speaks the Anthropic Messages API works, such as DeepSeek, Kimi or GLM. The subagent version is
+`claude/agents/operator.md` + `claude/CLAUDE.delegate.md` + `routes.deepseek.json`, which sends
+Claude Code's `haiku` slot to DeepSeek.
 
-Caveat: the DeepSeek route was not exercised end to end here, because this environment had no
-DeepSeek key. The router itself carried every request in the experiments. DeepSeek's tokenizer
-will also count somewhat differently from the repriced Haiku token counts.
+Caveats: the DeepSeek route itself was not run end to end, because this environment had no
+DeepSeek key. Every number above comes from Haiku traffic repriced per token, and DeepSeek's
+tokenizer will count somewhat differently. The task is a toy, and samples are 2-3 runs per
+cell, so read the percentages as directional.
 
 ## Reproduce
 
 ```bash
-pip install torch numpy matplotlib           # CPU torch is enough
-python bench/prepare.py                      # builds the corpus
+pip install torch numpy matplotlib            # CPU torch is enough
+python bench/prepare.py                       # builds the corpus
 python experiments/run_batch.py --jobs 4 \
-  light:solo:1 light:delegate:1 heavy:solo:1 heavy:delegate:1 long:solo:1 long:delegate:1
+  heavy:solo:1 heavy:switch_elide:1 long:solo:1 long:switch_elide:1
 python experiments/analyze.py && python experiments/plot.py
 ```
 
-Arms: `solo`, `delegate`, `inverted`, `cheap`. Conditions: `light`, `heavy`, `long`. Each run
-drives the logged-in `claude` CLI headless, costs real money ($0.2-1.1 per run here), and
-takes 12-30 minutes.
+Arms: `solo`, `delegate`, `switch`, `switch_elide`, `inverted`, `cheap`. Conditions: `light`,
+`heavy`, `long`. Each run drives the logged-in `claude` CLI headless, costs real money (about
+$0.3-1 per run with Haiku as the cheap model), and takes 15-30 minutes.
 
 ## Layout
 
 | path | what |
 |---|---|
-| `marx/router.py` | routing proxy and usage ledger |
+| `marx/router.py` | routing proxy: per-model routes, one-chat mode switching, cache re-anchoring, elision, ledger |
+| `marx/routes.switch_elide.deepseek.json` | recommended config (also `.anthropic`, and `routes.switch.*` without elision) |
+| `marx/make_switch_routes.py` | generates the switch configs from `claude/OPERATOR.switch.md` |
 | `marx/prices.py`, `marx/report.py` | price table; ledger summary with `--as-if` repricing |
-| `claude/agents/operator.md` | cheap-model subagent: check, submit, wait, resubmit, record, keep/discard |
-| `claude/agents/researcher.md` | Opus subagent for the inverted form: choose the next idea, edit `train.py`, keep a lab notebook |
-| `claude/hooks/only_researcher_edits.py` | PreToolUse hook enforcing the inverted form |
-| `claude/CLAUDE.delegate.md`, `claude/CLAUDE.inverted.md` | system-prompt snippets for the two topologies |
-| `bench/` | the toy autoresearch task and simulated cluster (`cluster.json` picks light/heavy) |
+| `bin/marx-mode` | the hand-over command |
+| `claude/CLAUDE.switch.md`, `claude/OPERATOR.switch.md` | protocol for both models; the operator's playbook |
+| `claude/hooks/operator_hands_back.py` | Stop hook: the operator must hand back before stopping |
+| `claude/agents/`, `claude/CLAUDE.delegate.md`, `claude/CLAUDE.inverted.md`, `claude/hooks/only_researcher_edits.py` | the subagent and inverted alternatives |
+| `bench/` | the toy autoresearch task and simulated cluster |
 | `experiments/` | arm runner, batch runner, cost attribution, plot |
 | `results/` | `REPORT.md`, chart, and per run: ledger, transcript, `results.tsv`, final `train.py` |
