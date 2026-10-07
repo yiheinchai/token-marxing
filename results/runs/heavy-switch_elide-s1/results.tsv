@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001,j003	3.4796	keep	baseline CausalMLP (ctx8, SGD lr1e-2 mom0.9)
+1	j004,j005	2.4719	keep	AdamW lr3e-3 wd0.01 (vs SGD lr1e-2)
+2	j006,j008	2.5306	discard	CONTEXT 16 (worse than 8, slower tokens/s)
+3	j009,j010	2.4829	discard	LR warmdown schedule (constant then linear decay, worse than constant)
+4	j011,j012	2.4350	keep	AdamW lr6e-3 (2x LR from exp1, new best)
