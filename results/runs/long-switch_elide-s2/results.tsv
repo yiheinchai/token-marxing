@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001,j003	3.4707	keep	baseline: CausalMLP ctx8, SGD lr1e-2 mom0.9
+1	j004,j005	2.4609	keep	adamw: AdamW lr3e-3 wd0 vs SGD
+2	j006,j008	2.5118	discard	ctx16: widen context 8->16 (regression)
+3	j009,j010	2.6113	discard	lrdecay: warmup+decay schedule (regression)
+4	j011,j012	2.4302	keep	lr1e-2: raise AdamW lr 3e-3->1e-2, best result
