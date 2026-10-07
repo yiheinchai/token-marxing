@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001	3.4871	keep	baseline unmodified CausalMLP ctx8 SGD lr1e-2 mom0.9
+1	j003,j004	2.4550	keep	AdamW lr3e-3 betas(0.9,0.99) wd0; beats baseline 3.4871
+2	j005,j006	2.6315	discard	warmup 3% + linear decay LR schedule; worse than exp1 2.4550
+3	j008,j009	2.4325	keep	AdamW lr1e-2 (raised from 3e-3); beats exp1 2.4550
+4	j010,j011	2.5412	discard	context 8->16 bytes; worse than exp3 2.4325
