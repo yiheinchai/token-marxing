@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001,j005	3.5009	keep	baseline (SGD mom 0.9 lr 1e-2, ctx8 MLP)
+1	j003,j004	2.4558	keep	AdamW lr 3e-3 instead of SGD
+2	j006,j008	2.6467	discard	warmup 3% + cosine LR decay to 0 (time-based)
+3	j009,j010	2.5280	discard	CONTEXT 8 -> 16 (fewer steps in budget)
+4	j011,j012	2.4335	keep	AdamW lr 3e-3 -> 1e-2
