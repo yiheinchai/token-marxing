@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001,j003	3.3498	keep	baseline (CausalMLP ctx8, SGD momentum lr1e-2)
+1	j004,j005	2.4328	keep	AdamW lr3e-3 wd0.01 instead of SGD momentum
+2	j006,j008	2.5130	discard	warmup 2% + cosine decay to 0.1x LR (time-based)
+3	j009,j010	2.4018	keep	AdamW LR 3e-3 -> 1e-2 (constant)
+4	j011,j012	2.5002	discard	CONTEXT 8 -> 16 bytes
