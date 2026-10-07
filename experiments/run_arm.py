@@ -74,11 +74,16 @@ def make_workspace(ws, arm, labour):
     with open(os.path.join(ws, "results.tsv"), "w") as fh:
         fh.write("exp\tjob\tval_bpb\tstatus\tdescription\n")
     with open(os.path.join(ws, ".gitignore"), "w") as fh:
-        fh.write(".jobs/\ndata/\n__pycache__/\n.claude/\n")
+        fh.write(".jobs/\ndata/\n__pycache__/\n.claude/\n.marx-mode\n")
     if ARMS[arm]["agents"]:
         os.makedirs(os.path.join(ws, ".claude", "agents"))
         for a in ARMS[arm]["agents"]:
             shutil.copy(os.path.join(ROOT, "claude", "agents", f"{a}.md"), os.path.join(ws, ".claude", "agents"))
+    if arm == "switch":
+        os.makedirs(os.path.join(ws, ".claude"), exist_ok=True)
+        hook = os.path.join(ROOT, "claude", "hooks", "operator_hands_back.py")
+        with open(os.path.join(ws, ".claude", "settings.json"), "w") as fh:
+            json.dump({"hooks": {"Stop": [{"hooks": [{"type": "command", "command": hook}]}]}}, fh)
     if "researcher" in ARMS[arm]["agents"]:
         open(os.path.join(ws, "notes.md"), "w").write("# Lab notebook\n")
         hook = os.path.join(ROOT, "claude", "hooks", "only_researcher_edits.py")

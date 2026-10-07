@@ -1,9 +1,12 @@
 #!/bin/sh
 # Hand the conversation to another model: `marx-mode think|labour "<note for the next model>"`.
-# The marx router reads this command back from the chat history and routes the next turns
-# to that mode's model. The command itself only acknowledges.
+# The marx router reads this command back from the chat history and routes the next turns to
+# that mode's model. The current mode is also written to $MARX_MODE_FILE (default ./.marx-mode)
+# so the Stop hook (claude/hooks/operator_hands_back.py) can stop the cheap model from ending
+# the session instead of handing back.
 mode="$1"; shift
 case "$mode" in
-  think|labour) echo "marx-mode: next turns go to the ${mode} model. Note: $*" ;;
+  think|labour) echo "$mode" > "${MARX_MODE_FILE:-.marx-mode}"
+                echo "marx-mode: next turns go to the ${mode} model. Note: $*" ;;
   *) echo "usage: marx-mode think|labour \"<note>\"" >&2; exit 2 ;;
 esac
