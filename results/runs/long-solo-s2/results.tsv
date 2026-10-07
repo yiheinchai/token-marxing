@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001,j003	3.3999	keep	baseline (CausalMLP ctx8, SGD momentum lr1e-2)
+1	j004,j005	2.4210	keep	AdamW lr3e-3 (betas .9/.99, wd .01) instead of SGD
+2	j006,j008	2.4732	discard	context 8->16 bytes (fewer steps, worse)
+3	j009,j010	2.4283	discard	linear LR warmdown to 0 over last 60% of time budget
+4	j011,j012	2.4114	keep	AdamW LR 3e-3 -> 6e-3 (constant)
