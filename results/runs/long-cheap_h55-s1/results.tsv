@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001,j003	3.3718	keep	baseline: unmodified train.py (seeds 1,2; j002 NODE_FAIL resubmitted as j003)
+1	j004,j005	2.4284	keep	Adam (lr 3e-3) replaces SGD+momentum
+2	j006,j008	2.4710	discard	CONTEXT 8 -> 16 bytes (j007 NODE_FAIL resubmitted as j008)
+3	j009,j010	2.4913	discard	linear LR decay to zero over time budget (Adam 3e-3)
+4	j011,j012	2.4219	keep	Adam lr 3e-3 -> 1e-2

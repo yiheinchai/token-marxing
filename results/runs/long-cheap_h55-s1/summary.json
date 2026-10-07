@@ -1,0 +1,134 @@
+{
+ "arm": "cheap_h55",
+ "seed": 1,
+ "labour": "long",
+ "main_model": "claude-haiku-5-5",
+ "agents": [],
+ "effort": "high",
+ "exit": 0,
+ "wall_s": 1569.3,
+ "git_log": [
+  "6ea3de3 exp4: Adam lr 3e-3 -> 1e-2 val_bpb=2.4219",
+  "f175b1c exp1: Adam (lr 3e-3) replaces SGD+momentum val_bpb=2.4284",
+  "93f79ff exp0: baseline unmodified train.py val_bpb=3.3718",
+  "266d39a baseline"
+ ],
+ "jobs": [
+  {
+   "id": "j001",
+   "name": "baseline-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1083.0,
+   "train_time_s": 60.0,
+   "val_bpb": 3.3822
+  },
+  {
+   "id": "j002",
+   "name": "baseline-s2",
+   "seed": 2,
+   "state": "NODE_FAIL"
+  },
+  {
+   "id": "j003",
+   "name": "baseline-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1075.0,
+   "train_time_s": 60.1,
+   "val_bpb": 3.3613
+  },
+  {
+   "id": "j004",
+   "name": "adam-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1087.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.4242
+  },
+  {
+   "id": "j005",
+   "name": "adam-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1187.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.4326
+  },
+  {
+   "id": "j006",
+   "name": "ctx16-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 170496.0,
+   "steps": 860.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.4857
+  },
+  {
+   "id": "j007",
+   "name": "ctx16-s2",
+   "seed": 2,
+   "state": "NODE_FAIL"
+  },
+  {
+   "id": "j008",
+   "name": "ctx16-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 170496.0,
+   "steps": 930.0,
+   "train_time_s": 60.1,
+   "val_bpb": 2.4564
+  },
+  {
+   "id": "j009",
+   "name": "lrdecay-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1154.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.4781
+  },
+  {
+   "id": "j010",
+   "name": "lrdecay-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1146.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.5045
+  },
+  {
+   "id": "j011",
+   "name": "adam1e2-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1135.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.4404
+  },
+  {
+   "id": "j012",
+   "name": "adam1e2-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1100.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.4035
+  }
+ ],
+ "n_completed": 10,
+ "n_experiments": 5,
+ "best_val_bpb": 2.42195,
+ "baseline_val_bpb": 3.37175
+}
