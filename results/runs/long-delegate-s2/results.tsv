@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001,j003	3.3933	keep	unmodified baseline
+1	j004,j005	2.4371	keep	AdamW lr 3e-3 instead of SGD momentum
+2	j006,j008	2.5284	discard	cosine LR decay to 0 over wall-clock budget
+3	j009,j010	2.4384	discard	AdamW lr 1e-2 (was 3e-3)
+4	j011,j012	2.5217	discard	context 16 bytes and hidden 384 (was 8/256)
