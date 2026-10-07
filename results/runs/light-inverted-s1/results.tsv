@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001	3.3845	keep	baseline
+1	j003	2.4807	keep	adam-lr2e-3
+2	j004	2.7171	discard	adam-warmup-cosine
+3	j005	2.4164	keep	adam-lr5e-3
+4	j006	2.4367	discard	adam-lr1e-2
