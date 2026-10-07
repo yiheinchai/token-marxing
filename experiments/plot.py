@@ -17,7 +17,7 @@ SERIES = [  # reference palette slots 1-4, fixed order
     ("Cheap model (Haiku 4.5 repriced as DeepSeek V4.1 Flash; Haiku 5.5 at list price)", "#eda100"),
 ]
 ARMS = {"solo": "Opus\nalone", "delegate": "Opus +\noperator\nsubagent", "switch": "one chat,\nmodel\nswitch",
-        "switch_elide": "one chat,\nswitch +\nelide", "switch_elide_h55": "one chat +\nelide,\nHaiku 5.5",
+        "switch_elide": "one chat,\nswitch +\nelide", "switch_elide_h55": "one chat +\nelide,\nHaiku 5.5", "dispatch_h55": "invisible\nswitch,\nHaiku 5.5",
         "cheap_h55": "Haiku 5.5\nalone"}
 CONDITIONS = {"light": "Light labour\n(tidy queue)", "heavy": "Heavy labour\n(busy cluster, 2 seeds)",
               "long": "Long jobs\n(jobs outlast a tool call)"}

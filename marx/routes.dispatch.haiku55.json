@@ -1,0 +1,28 @@
+{
+  "routes": [
+    {
+      "name": "main",
+      "match": "claude-opus-*",
+      "dispatch": {
+        "think": {
+          "upstream": "https://api.anthropic.com"
+        },
+        "labour": {
+          "upstream": "https://api.anthropic.com",
+          "model": "claude-haiku-5-5"
+        },
+        "classifier": {
+          "upstream": "https://api.anthropic.com",
+          "model": "claude-haiku-5-5"
+        },
+        "elide": false,
+        "keep_last": 1
+      }
+    },
+    {
+      "name": "other",
+      "match": "*",
+      "upstream": "https://api.anthropic.com"
+    }
+  ]
+}

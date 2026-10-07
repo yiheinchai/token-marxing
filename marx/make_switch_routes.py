@@ -50,7 +50,26 @@ def config(provider, elide):
     ]}
 
 
+def dispatch_config(provider, elide):
+    """Invisible switching: no marx-mode, no roles; the router's dispatcher picks each turn's model."""
+    labour = {k: v for k, v in CHEAP[provider].items() if k not in ("turn_note", "handoff_note")}
+    return {"routes": [
+        {"name": "main", "match": "claude-opus-*",
+         "dispatch": {"think": {"upstream": "https://api.anthropic.com"}, "labour": labour,
+                      "classifier": {"upstream": "https://api.anthropic.com", "model": "claude-haiku-5-5"},
+                      "elide": elide, "keep_last": 1}},
+        {"name": "other", "match": "*", "upstream": "https://api.anthropic.com"},
+    ]}
+
+
 def main():
+    for provider in ("haiku55", "deepseek"):
+        for elide in (False, True):
+            name = f"routes.dispatch{'_elide' if elide else ''}.{provider}.json"
+            with open(os.path.join(HERE, name), "w") as fh:
+                json.dump(dispatch_config(provider, elide), fh, indent=2)
+                fh.write("\n")
+            print(name)
     for provider in CHEAP:
         for elide in (False, True):
             name = f"routes.switch{'_elide' if elide else ''}.{provider}.json"

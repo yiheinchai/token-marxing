@@ -74,10 +74,15 @@ def load_run(d):
                 rec["tools"].append({"name": c["name"], "input": c.get("input") or {}})
                 if c["name"] in ("Agent", "Task"):
                     sub_type[c["id"]] = (c.get("input") or {}).get("subagent_type", "subagent")
+    edits = collections.Counter()          # train.py edits by model family
+    for m in msgs.values():
+        if "code" in label(m["tools"]) and m["model"]:
+            edits["opus" if "opus" in m["model"] else "cheap"] += 1
+    summ["code_edits"] = dict(edits)
     calls = []
     for line in open(os.path.join(d, "ledger.jsonl")):
         e = json.loads(line)
-        if e.get("status") != 200:
+        if e.get("status") != 200 or "usage" not in e:
             continue
         m = msgs.get(e.get("message_id"))
         labs = label(m["tools"]) if m else {"harness": 1.0}
@@ -131,6 +136,8 @@ def run_metrics(summ, calls):
         "opus_share_harness": by_bucket["harness"] / opus_cost if opus_cost else None,
         "cost_by_model_label": dict(by_model_label),
         "calls": len(calls),
+        "code_edits_opus": summ.get("code_edits", {}).get("opus", 0),
+        "code_edits_cheap": summ.get("code_edits", {}).get("cheap", 0),
     }
 
 
@@ -152,7 +159,7 @@ def main():
             runs.append(run_metrics(*load_run(d)))
     json.dump(runs, open(os.path.join(ROOT, "results", "summary.json"), "w"), indent=1)
 
-    order = ["solo", "delegate", "switch", "switch_elide", "switch_elide_h55", "cheap_h55", "switch_naive", "inverted", "inverted_unenforced", "cheap"]
+    order = ["solo", "delegate", "switch", "switch_elide", "switch_elide_h55", "dispatch_h55", "cheap_h55", "switch_naive", "inverted", "inverted_unenforced", "cheap"]
     groups = [(lab, a) for lab in ("light", "heavy", "long") for a in order
               if any(r["arm"] == a and r["labour"] == lab for r in runs)]
     agg = {}

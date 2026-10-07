@@ -31,6 +31,7 @@ import urllib.parse
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
+from marx.dispatch import Dispatcher, parse_verdict
 from marx.prices import usage_cost
 
 HOP_BY_HOP = {"connection", "keep-alive", "proxy-authenticate", "proxy-authorization", "te",
@@ -74,6 +75,14 @@ class Route:
         for m, sub in (self.modes or {}).items():
             sub.mode = m
         self.default_mode = sw.get("default") if sw else None
+        # Invisible switching: the router itself picks the model for each turn (marx/dispatch.py)
+        dp = spec.get("dispatch")
+        self.dispatch_spec = dp
+        if dp:
+            self.modes = {m: Route(dp[m], f"{self.name}:{m}") for m in ("think", "labour")}
+            self.default_mode = "think"
+            self.classifier = Route(dp["classifier"], f"{self.name}:dispatcher")
+        self.dispatcher = None   # created by the Router, which can make the classifier calls
 
     def matches(self, model):
         return fnmatch.fnmatch(model or "", self.match)
@@ -224,10 +233,53 @@ def last_mode(messages):
 class Router:
     def __init__(self, config, ledger_path):
         self.routes = [Route(r) for r in config["routes"]]
+        self.init_dispatchers()
         self.ledger_path = ledger_path
         self.lock = threading.Lock()
         self.ctx = ssl.create_default_context(
             cafile=os.environ.get("SSL_CERT_FILE") or os.environ.get("REQUESTS_CA_BUNDLE") or None)
+
+    def init_dispatchers(self):
+        for r in self.routes:
+            if r.dispatch_spec:
+                r.dispatcher = Dispatcher(r.dispatch_spec, None)
+
+    def classify(self, route, headers, system, text, client_system=None):
+        """One cheap side call: should the next turn go to the think or the labour model?
+        It is sent as part of the same client session: the client's leading system blocks (for
+        Claude Code, its billing header and identity line) come first, then the classifier prompt."""
+        c = route.classifier
+        lead = []
+        if isinstance(client_system, list):
+            for b in client_system[:2]:
+                if isinstance(b, dict) and b.get("type") == "text" and len(b.get("text", "")) < 400:
+                    lead.append({"type": "text", "text": b["text"]})
+        body = json.dumps({"model": c.model, "max_tokens": 400, "system": lead + [{"type": "text", "text": system}],
+                           "messages": [{"role": "user", "content": text or "(no steps yet)"}]}).encode()
+        hdrs = dict(headers, **{"Content-Length": str(len(body)), "Accept-Encoding": "identity"})
+        hdrs = {k: v for k, v in hdrs.items() if k.lower() != "accept"}
+        t0 = time.time()
+        try:
+            conn = self.connect(c.upstream)
+            conn.request("POST", c.upstream.path.rstrip("/") + "/v1/messages", body=body, headers=hdrs)
+            resp = conn.getresponse()
+            raw = resp.read()
+            conn.close()
+            data = json.loads(raw or b"{}")
+        except (OSError, ValueError) as e:
+            self.record({"ts": t0, "route": c.name, "status": 0, "error": repr(e)[:300]})
+            return "think"
+        if resp.status != 200:
+            self.record({"ts": t0, "route": c.name, "status": resp.status, "error": raw[:500].decode(errors="replace")})
+        text_out = " ".join(b.get("text", "") for b in data.get("content") or [] if b.get("type") == "text")
+        verdict = parse_verdict(text_out) if resp.status == 200 else "think"
+        usage = data.get("usage") or {}
+        if usage:
+            self.record({"ts": t0, "latency_s": round(time.time() - t0, 3), "route": c.name,
+                         "requested_model": c.model, "served_model": c.model, "upstream_reported_model": data.get("model"),
+                         "message_id": data.get("id"), "status": resp.status, "usage": usage,
+                         "cost_usd": usage_cost(c.model, usage), "verdict": verdict})
+        return verdict
 
     def pick(self, model):
         for r in self.routes:
@@ -272,9 +324,22 @@ def make_handler(router):
                     payload = None
             requested = payload.get("model") if isinstance(payload, dict) else None
             try:
-                route = router.pick(requested or "").resolve(payload)
+                top = router.pick(requested or "")
             except LookupError as e:
                 return self._error(404, str(e))
+            fwd_headers = {k: v for k, v in self.headers.items() if k.lower() not in HOP_BY_HOP}
+            why = None
+            if top.dispatcher and isinstance(payload, dict) and payload.get("tools") and payload.get("messages"):
+                d = top.dispatcher
+                client_system = payload.get("system")
+                d.classify_fn = lambda system, text: router.classify(top, fwd_headers, system, text, client_system)
+                conv = d.conversation(payload)
+                with conv.lock:
+                    mode, why = d.choose(payload)
+                    route = top.modes[mode]
+                    d.prepare(conv, payload, mode)
+            else:
+                route = top.resolve(payload)
 
             if isinstance(payload, dict):
                 route.rewrite(payload)
@@ -358,7 +423,7 @@ def make_handler(router):
                 router.record({"ts": t0, "latency_s": round(time.time() - t0, 3), "route": route.name,
                                "requested_model": requested, "served_model": served,
                                "upstream_reported_model": resp_model, "message_id": msg_id,
-                               "status": resp.status,
+                               "status": resp.status, "dispatch": why,
                                "usage": usage, "cost_usd": cost})
 
         def _error(self, code, msg):
@@ -388,7 +453,7 @@ def build_server(config_path, port, ledger):
     router = Router(config, ledger)
     srv = QuietServer(("127.0.0.1", port), make_handler(router))
     print(f"marx router on http://127.0.0.1:{srv.server_port}  routes: "
-          + ", ".join(f"{r.match}->" + ("switch(" + ", ".join(f"{m}:{sub.upstream.netloc}/{sub.model or 'same'}"
+          + ", ".join(f"{r.match}->" + (("dispatch(" if r.dispatch_spec else "switch(") + ", ".join(f"{m}:{sub.upstream.netloc}/{sub.model or 'same'}"
                                                              for m, sub in r.modes.items()) + ")" if r.modes
                                         else f"{r.upstream.netloc}{'/' + r.model if r.model else ''}")
                       for r in router.routes),

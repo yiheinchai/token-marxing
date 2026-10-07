@@ -1,0 +1,37 @@
+{
+  "routes": [
+    {
+      "name": "main",
+      "match": "claude-opus-*",
+      "dispatch": {
+        "think": {
+          "upstream": "https://api.anthropic.com"
+        },
+        "labour": {
+          "upstream": "https://api.deepseek.com/anthropic",
+          "api_key_env": "DEEPSEEK_API_KEY",
+          "model": "deepseek-flash",
+          "drop_fields": [
+            "thinking",
+            "output_config",
+            "context_management"
+          ],
+          "strip_thinking": true,
+          "fold_system_messages": true,
+          "max_tokens": 32000
+        },
+        "classifier": {
+          "upstream": "https://api.anthropic.com",
+          "model": "claude-haiku-5-5"
+        },
+        "elide": true,
+        "keep_last": 1
+      }
+    },
+    {
+      "name": "other",
+      "match": "*",
+      "upstream": "https://api.anthropic.com"
+    }
+  ]
+}

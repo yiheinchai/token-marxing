@@ -40,6 +40,9 @@ ARMS = {
     "switch_elide_h55": dict(main=OPUS, agents=[],      system="CLAUDE.switch.md",
                      routes="routes.switch_elide.haiku55.json"),
     "cheap_h55": dict(main="claude-haiku-5-5", agents=[], system=None),
+    # invisible switching: same instructions as `solo`; the router's dispatcher picks the model per turn
+    "dispatch_h55": dict(main=OPUS, agents=[],          system=None,
+                     routes="routes.dispatch_elide.haiku55.json"),
     # same, but Opus sees each labour streak only as the operator's hand-back report
     "switch_elide": dict(main=OPUS, agents=[],          system="CLAUDE.switch.md",
                      routes="routes.switch_elide.anthropic.json"),
