@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001,j003	3.49475	keep	unmodified baseline
+1	j004,j005	2.4719	keep	AdamW lr 3e-3 instead of SGD momentum
+2	j006,j008	2.4663	keep	LR schedule: warmup + linear decay to 0, peak 6e-3.
+3	j009,j010	2.5582	discard	MLP context 8 -> 16 bytes
+4	j011,j012	2.36605	keep	batch size 32 -> 16 (more optimizer steps)
