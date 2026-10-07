@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001,j003	3.3614	keep	baseline (SGD mom 0.9 lr 1e-2, ctx8 MLP); j002 NODE_FAIL resubmitted as j003
+1	j004,j005	2.4389	keep	AdamW lr 3e-3 instead of SGD
+2	j006,j008	2.5188	discard	warmup 3% + cosine LR decay to 0 (time-based); j007 NODE_FAIL resubmitted as j008
+3	j009,j010	2.3864	keep	constant AdamW LR 3e-3 -> 6e-3
+4	j011,j012	2.5228	discard	context 8 -> 16 bytes with embed 24 -> 16 (same fc1 cost)
