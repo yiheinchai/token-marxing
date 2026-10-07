@@ -7,7 +7,8 @@ in the transcript, and labelled by what that message *did*:
   read         Read/Grep/Glob, cat/ls/git diff of sources       }
   answer       no tool call (reasoning, final summary)          }
   orchestrate  running check.py / jobq.py, sleep/poll, job logs } "labour"
-  bookkeep     git commit/checkout, results.tsv, notes.md       }
+  notes        writing the lab notebook (notes.md)              } (intellectual)
+  bookkeep     git commit/checkout, results.tsv                 }
   delegate     calling a subagent                                 "coordination"
   harness      calls Claude Code makes on its own (titles, summaries...)
 A call's whole cost (re-reading its context + writing its output) is charged to what it did;
@@ -26,11 +27,11 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 from marx.prices import usage_cost  # noqa: E402
 
-BUCKET = {"code": "intellectual", "read": "intellectual", "answer": "intellectual",
+BUCKET = {"code": "intellectual", "read": "intellectual", "answer": "intellectual", "notes": "intellectual",
           "orchestrate": "labour", "bookkeep": "labour",
           "delegate": "coordination", "harness": "harness"}
 ORCH = re.compile(r"python3?\s+(\S*/)?(check|jobq)\.py|\bsleep\b|\buntil\b|log\.txt|\.jobs/")
-BOOK = re.compile(r"git (commit|checkout|add|reset|stash)|>>\s*results\.tsv|results\.tsv\s*<<|notes\.md")
+BOOK = re.compile(r"git (commit|checkout|add|reset|stash)|>>\s*results\.tsv|results\.tsv\s*<<")
 CODE = re.compile(r"(sed\s+-i[^|;&]*train\.py|>\s*train\.py|tee\s+train\.py|"
                   r"train\.py[\s\S]*(\.write\(|open\([^)]*['\"]w))")
 
@@ -45,7 +46,8 @@ def label(tools):
     for t in tools:
         name, inp = t["name"], t["input"]
         if name in ("Edit", "Write", "MultiEdit", "NotebookEdit"):
-            found.add("code" if str(inp.get("file_path", "")).endswith("train.py") else "bookkeep")
+            path = str(inp.get("file_path", ""))
+            found.add("code" if path.endswith("train.py") else "notes" if path.endswith("notes.md") else "bookkeep")
         elif name == "Bash":
             cmd = inp.get("command", "")
             kinds = {k for k, rx in (("code", CODE), ("orchestrate", ORCH), ("bookkeep", BOOK)) if rx.search(cmd)}
@@ -123,6 +125,7 @@ def run_metrics(summ, calls):
         "opus_share_intellectual": by_bucket["intellectual"] / opus_cost if opus_cost else None,
         "opus_share_labour": by_bucket["labour"] / opus_cost if opus_cost else None,
         "opus_share_coordination": by_bucket["coordination"] / opus_cost if opus_cost else None,
+        "opus_share_harness": by_bucket["harness"] / opus_cost if opus_cost else None,
         "cost_by_model_label": dict(by_model_label),
         "calls": len(calls),
     }
