@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+exp0	j001,j003	3.4170	keep	baseline
+exp1	j004,j005	2.5174	keep	adamw-cosine: AdamW with warmup+cosine schedule
+exp2	j006,j008	2.8639	discard	ngram-lookup-tables: Larger context/hidden degraded performance
+exp3	j009,j010	2.3552	keep	adamw-lr1e-2: Increased peak LR from 3e-3 to 1e-2
+exp4	j011,j012	2.3449	keep	adamw-lr2e-2: Further increased peak LR to 2e-2
