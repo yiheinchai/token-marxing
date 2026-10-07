@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001, j003	3.3958	keep	baseline CausalMLP
+1	j004, j005	3.5309	discard	HIDDEN=512
+2	j006, j008	3.6485	discard	BATCH_SIZE=64
+3	j009, j010	3.4744	discard	CONTEXT=16
+4	j011, j012	2.6455	keep	Adam optimizer (lr=1e-3)
