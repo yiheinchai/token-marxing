@@ -36,6 +36,9 @@ ARMS = {
     # one conversation, the model swapped per turn by the router (`marx-mode think|labour`)
     "switch":   dict(main=OPUS,  agents=[],              system="CLAUDE.switch.md",
                      routes="routes.switch.anthropic.json"),
+    # same, but Opus sees each labour streak only as the operator's hand-back report
+    "switch_elide": dict(main=OPUS, agents=[],          system="CLAUDE.switch.md",
+                     routes="routes.switch_elide.anthropic.json"),
 }
 
 # "long": jobs outlast a single tool call, like hours-long training jobs vs Claude Code's
@@ -79,7 +82,7 @@ def make_workspace(ws, arm, labour):
         os.makedirs(os.path.join(ws, ".claude", "agents"))
         for a in ARMS[arm]["agents"]:
             shutil.copy(os.path.join(ROOT, "claude", "agents", f"{a}.md"), os.path.join(ws, ".claude", "agents"))
-    if arm == "switch":
+    if arm.startswith("switch"):
         os.makedirs(os.path.join(ws, ".claude"), exist_ok=True)
         hook = os.path.join(ROOT, "claude", "hooks", "operator_hands_back.py")
         with open(os.path.join(ws, ".claude", "settings.json"), "w") as fh:

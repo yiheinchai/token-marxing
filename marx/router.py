@@ -58,6 +58,10 @@ class Route:
         # preserved-thinking checks: the next request sends that message without the note,
         # which those models would treat as an edit of history.
         self.turn_note = spec.get("turn_note")
+        # Show this model the other mode's streaks only as the hand-back message (deterministically,
+        # so its cache and preserved-thinking checks are unaffected): what it skips is labour it
+        # never saw, after its own last turn.
+        self.elide_other_modes = spec.get("elide_other_modes", False)
         # Same-conversation model switching: the conversation itself says who acts next, via the
         # last `marx-mode <mode>` shell command in the history. Each mode is a route of its own.
         sw = spec.get("switch")
@@ -91,6 +95,8 @@ class Route:
                     msg["content"] = kept or [{"type": "text", "text": "."}]
         if self.fold_system_messages and payload.get("messages"):
             payload["messages"] = fold_system_messages(payload["messages"])
+        if self.mode and self.elide_other_modes and payload.get("messages"):
+            payload["messages"] = elide_other_modes(payload["messages"], self.mode)
         if self.mode and payload.get("messages"):
             anchor_cache(payload["messages"], self.mode)
         if self.turn_note and payload.get("messages") and payload["messages"][-1].get("role") == "user":
@@ -134,6 +140,31 @@ def _mode_switches(msg):
             m = MODE_RE.search(str((block.get("input") or {}).get("command", "")))
             if m:
                 yield m.group(1)
+
+
+def elide_other_modes(messages, mode):
+    """Drop the turns another mode took between a hand-off (`marx-mode <other>`) and the hand-back
+    (`marx-mode <mode>`), keeping the hand-off's tool result and the hand-back message itself."""
+    out, i = [], 0
+    while i < len(messages):
+        msg = messages[i]
+        out.append(msg)
+        leaves = msg.get("role") == "assistant" and any(m != mode for m in _mode_switches(msg))
+        if leaves and i + 1 < len(messages):
+            back = next((j for j in range(i + 2, len(messages))
+                         if messages[j].get("role") == "assistant" and mode in _mode_switches(messages[j])), None)
+            if back is None:          # still inside the other mode's streak
+                i += 1
+                continue
+            out.append(messages[i + 1])               # tool result of the hand-off
+            n = back - (i + 2)
+            if n > 0:
+                out[-1] = dict(out[-1], content=_blocks(out[-1]["content"]) + [{"type": "text", "text":
+                          f"[marx: {n} messages of the other model's turns are elided here; its hand-back report follows]"}])
+            i = back
+            continue
+        i += 1
+    return out
 
 
 def anchor_cache(messages, mode, lookback=15):

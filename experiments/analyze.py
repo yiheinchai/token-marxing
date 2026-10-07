@@ -149,7 +149,7 @@ def main():
             runs.append(run_metrics(*load_run(d)))
     json.dump(runs, open(os.path.join(ROOT, "results", "summary.json"), "w"), indent=1)
 
-    order = ["solo", "delegate", "switch", "switch_naive", "inverted", "inverted_unenforced", "cheap"]
+    order = ["solo", "delegate", "switch", "switch_elide", "switch_naive", "inverted", "inverted_unenforced", "cheap"]
     groups = [(lab, a) for lab in ("light", "heavy", "long") for a in order
               if any(r["arm"] == a and r["labour"] == lab for r in runs)]
     agg = {}
