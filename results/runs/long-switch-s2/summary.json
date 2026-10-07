@@ -1,0 +1,134 @@
+{
+ "arm": "switch",
+ "seed": 2,
+ "labour": "long",
+ "main_model": "claude-opus-5-5",
+ "agents": [],
+ "effort": "high",
+ "exit": 0,
+ "wall_s": 1581.6,
+ "git_log": [
+  "19542f3 exp4: AdamW lr 8e-3 val_bpb=2.4348",
+  "d4a5c49 exp1: AdamW lr 3e-3 betas (0.9,0.99) wd 0 val_bpb=2.4450",
+  "1a68043 exp0: baseline CausalMLP ctx8 SGD momentum val_bpb=3.4391",
+  "7180aec baseline"
+ ],
+ "jobs": [
+  {
+   "id": "j001",
+   "name": "baseline-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 877.0,
+   "train_time_s": 60.1,
+   "val_bpb": 3.4656
+  },
+  {
+   "id": "j002",
+   "name": "baseline-s2",
+   "seed": 2,
+   "state": "NODE_FAIL"
+  },
+  {
+   "id": "j003",
+   "name": "baseline-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 944.0,
+   "train_time_s": 60.1,
+   "val_bpb": 3.4126
+  },
+  {
+   "id": "j004",
+   "name": "adamw-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 892.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.4267
+  },
+  {
+   "id": "j005",
+   "name": "adamw-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 892.0,
+   "train_time_s": 60.1,
+   "val_bpb": 2.4632
+  },
+  {
+   "id": "j006",
+   "name": "ctx32-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 201216.0,
+   "steps": 560.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.7132
+  },
+  {
+   "id": "j007",
+   "name": "ctx32-s2",
+   "seed": 2,
+   "state": "NODE_FAIL"
+  },
+  {
+   "id": "j008",
+   "name": "ctx32-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 201216.0,
+   "steps": 619.0,
+   "train_time_s": 60.1,
+   "val_bpb": 2.7502
+  },
+  {
+   "id": "j009",
+   "name": "lrdecay-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 839.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.5686
+  },
+  {
+   "id": "j010",
+   "name": "lrdecay-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 845.0,
+   "train_time_s": 60.1,
+   "val_bpb": 2.5797
+  },
+  {
+   "id": "j011",
+   "name": "lr8e-3-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 813.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.434
+  },
+  {
+   "id": "j012",
+   "name": "lr8e-3-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 782.0,
+   "train_time_s": 60.1,
+   "val_bpb": 2.4355
+  }
+ ],
+ "n_completed": 10,
+ "n_experiments": 5,
+ "best_val_bpb": 2.43475,
+ "baseline_val_bpb": 3.4391
+}

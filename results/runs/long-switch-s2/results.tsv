@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001,j003	3.4391	keep	baseline CausalMLP ctx8 SGD momentum
+1	j004,j005	2.4450	keep	AdamW lr 3e-3 betas (0.9,0.99) wd 0
+2	j006,j008	2.7317	discard	ctx32 embed16 (throughput trade-off, worse val)
+3	j009,j010	2.5742	discard	linear LR decay 3e-3->0 over 60s (slightly worse val_bpb)
+4	j011,j012	2.4348	keep	AdamW lr 8e-3 (beats exp1 by 0.0102)
