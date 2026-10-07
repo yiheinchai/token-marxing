@@ -30,7 +30,9 @@
    "haiku:code": 0.0269382,
    "haiku:answer": 0.0059547
   },
-  "calls": 67
+  "calls": 67,
+  "code_edits_opus": 0,
+  "code_edits_cheap": 4
  },
  {
   "labour": "heavy",
@@ -63,7 +65,79 @@
    "haiku:harness": 0.005195,
    "haiku:answer": 0.007967100000000001
   },
-  "calls": 41
+  "calls": 41,
+  "code_edits_opus": 0,
+  "code_edits_cheap": 4
+ },
+ {
+  "labour": "heavy",
+  "arm": "cheap_h55",
+  "seed": 1,
+  "exit": 0,
+  "wall_min": 26.3,
+  "n_completed": 10,
+  "best_val_bpb": 2.3886000000000003,
+  "baseline_val_bpb": 3.3664,
+  "baseline_steps": 1096.5,
+  "gain_bpb": 0.9777999999999998,
+  "cost_total": 0.02927685,
+  "cost_total_cheap_on_deepseek": 0.02927685,
+  "cost_cheap_model": 0.02927685,
+  "cost_opus": 0,
+  "opus_calls": 0,
+  "opus_out_tokens": 0,
+  "opus_in_tokens": 0,
+  "opus_cost_parts": {},
+  "opus_share_intellectual": null,
+  "opus_share_labour": null,
+  "opus_share_coordination": null,
+  "opus_share_harness": null,
+  "cost_by_model_label": {
+   "haiku:read": 0.002699135,
+   "haiku:orchestrate": 0.017675715,
+   "haiku:harness": 0.00173664,
+   "haiku:bookkeep": 0.0037698999999999996,
+   "haiku:code": 0.00199554,
+   "haiku:answer": 0.00139992
+  },
+  "calls": 41,
+  "code_edits_opus": 0,
+  "code_edits_cheap": 4
+ },
+ {
+  "labour": "heavy",
+  "arm": "cheap_h55",
+  "seed": 2,
+  "exit": 0,
+  "wall_min": 27.06833333333333,
+  "n_completed": 10,
+  "best_val_bpb": 2.4063,
+  "baseline_val_bpb": 3.35235,
+  "baseline_steps": 1146.0,
+  "gain_bpb": 0.9460500000000001,
+  "cost_total": 0.02707352,
+  "cost_total_cheap_on_deepseek": 0.02707352,
+  "cost_cheap_model": 0.02707352,
+  "cost_opus": 0,
+  "opus_calls": 0,
+  "opus_out_tokens": 0,
+  "opus_in_tokens": 0,
+  "opus_cost_parts": {},
+  "opus_share_intellectual": null,
+  "opus_share_labour": null,
+  "opus_share_coordination": null,
+  "opus_share_harness": null,
+  "cost_by_model_label": {
+   "haiku:read": 0.0019535999999999998,
+   "haiku:orchestrate": 0.016245550000000004,
+   "haiku:harness": 0.0018099799999999999,
+   "haiku:bookkeep": 0.00369476,
+   "haiku:code": 0.00211246,
+   "haiku:answer": 0.00125717
+  },
+  "calls": 42,
+  "code_edits_opus": 0,
+  "code_edits_cheap": 4
  },
  {
   "labour": "heavy",
@@ -105,7 +179,9 @@
    "opus:bookkeep": 0.0117243,
    "opus:answer": 0.0230208
   },
-  "calls": 87
+  "calls": 87,
+  "code_edits_opus": 5,
+  "code_edits_cheap": 0
  },
  {
   "labour": "heavy",
@@ -147,7 +223,9 @@
    "opus:code": 0.10738,
    "opus:answer": 0.027902600000000003
   },
-  "calls": 122
+  "calls": 122,
+  "code_edits_opus": 3,
+  "code_edits_cheap": 0
  },
  {
   "labour": "heavy",
@@ -188,7 +266,94 @@
    "opus:code": 0.056092800000000005,
    "opus:answer": 0.0239616
   },
-  "calls": 84
+  "calls": 84,
+  "code_edits_opus": 3,
+  "code_edits_cheap": 0
+ },
+ {
+  "labour": "heavy",
+  "arm": "dispatch_h55",
+  "seed": 1,
+  "exit": 0,
+  "wall_min": 23.69333333333333,
+  "n_completed": 10,
+  "best_val_bpb": 2.4151499999999997,
+  "baseline_val_bpb": 3.3601,
+  "baseline_steps": 1133.0,
+  "gain_bpb": 0.9449500000000004,
+  "cost_total": 0.52082088,
+  "cost_total_cheap_on_deepseek": 0.52082088,
+  "cost_cheap_model": 0.014094680000000002,
+  "cost_opus": 0.5067262,
+  "opus_calls": 24,
+  "opus_out_tokens": 9609,
+  "opus_in_tokens": 474866,
+  "opus_cost_parts": {
+   "input": 0.009240000000000002,
+   "cache_write": 0.21620000000000006,
+   "cache_read": 0.08910620000000002,
+   "output": 0.19218000000000002
+  },
+  "opus_share_intellectual": 0.23208154620779428,
+  "opus_share_labour": 0.7160624416104792,
+  "opus_share_coordination": 0.0,
+  "opus_share_harness": 0.05185601218172654,
+  "cost_by_model_label": {
+   "opus:read": 0.0543707,
+   "haiku:harness": 0.006087500000000001,
+   "opus:orchestrate": 0.28533230000000004,
+   "haiku:orchestrate": 0.008007180000000001,
+   "opus:harness": 0.0262768,
+   "opus:bookkeep": 0.07751530000000001,
+   "opus:code": 0.0365541,
+   "opus:answer": 0.026677
+  },
+  "calls": 59,
+  "code_edits_opus": 3,
+  "code_edits_cheap": 0
+ },
+ {
+  "labour": "heavy",
+  "arm": "dispatch_h55",
+  "seed": 2,
+  "exit": 0,
+  "wall_min": 23.866666666666667,
+  "n_completed": 10,
+  "best_val_bpb": 2.4013,
+  "baseline_val_bpb": 3.39015,
+  "baseline_steps": 1035.5,
+  "gain_bpb": 0.9888500000000002,
+  "cost_total": 0.4206964,
+  "cost_total_cheap_on_deepseek": 0.4206964,
+  "cost_cheap_model": 0.009445400000000001,
+  "cost_opus": 0.411251,
+  "opus_calls": 25,
+  "opus_out_tokens": 8256,
+  "opus_in_tokens": 406784,
+  "opus_cost_parts": {
+   "input": 0.009860000000000002,
+   "cache_write": 0.15939199999999995,
+   "cache_read": 0.07687900000000002,
+   "output": 0.16512000000000002
+  },
+  "opus_share_intellectual": 0.1901227393165407,
+  "opus_share_labour": 0.7322993338212755,
+  "opus_share_coordination": 0.0,
+  "opus_share_harness": 0.07757792686218393,
+  "cost_by_model_label": {
+   "opus:read": 0.0258566,
+   "haiku:harness": 0.004731700000000002,
+   "opus:orchestrate": 0.22857516666666663,
+   "haiku:orchestrate": 0.004067380000000001,
+   "opus:harness": 0.031904,
+   "opus:bookkeep": 0.07258366666666667,
+   "haiku:read": 0.00064632,
+   "opus:code": 0.026696166666666663,
+   "opus:answer": 0.0256354
+  },
+  "calls": 54,
+  "code_edits_opus": 3,
+  "code_edits_cheap": 0
  },
  {
   "labour": "heavy",
@@ -225,12 +390,14 @@
    "haiku:bookkeep": 0.0392053,
    "haiku:delegate": 0.030462100000000002,
    "opus:read": 0.1680124,
-   "opus:notes": 0.1395295,
    "opus:code": 0.2534845,
+   "opus:notes": 0.1395295,
    "opus:harness": 0.0807104,
    "haiku:answer": 0.0089499
   },
-  "calls": 78
+  "calls": 78,
+  "code_edits_opus": 4,
+  "code_edits_cheap": 0
  },
  {
   "labour": "heavy",
@@ -267,12 +434,14 @@
    "haiku:bookkeep": 0.0266531,
    "haiku:delegate": 0.0243401,
    "opus:read": 0.2811496,
-   "opus:notes": 0.1481159,
    "opus:code": 0.2389269,
+   "opus:notes": 0.1481159,
    "opus:harness": 0.0858756,
    "haiku:answer": 0.007725600000000001
   },
-  "calls": 86
+  "calls": 86,
+  "code_edits_opus": 4,
+  "code_edits_cheap": 0
  },
  {
   "labour": "heavy",
@@ -310,7 +479,9 @@
    "opus:code": 0.03212113333333333,
    "opus:answer": 0.023845400000000003
   },
-  "calls": 30
+  "calls": 30,
+  "code_edits_opus": 3,
+  "code_edits_cheap": 0
  },
  {
   "labour": "heavy",
@@ -348,7 +519,9 @@
    "opus:code": 0.04838616666666666,
    "opus:answer": 0.027882999999999998
   },
-  "calls": 24
+  "calls": 24,
+  "code_edits_opus": 3,
+  "code_edits_cheap": 0
  },
  {
   "labour": "heavy",
@@ -386,7 +559,49 @@
    "opus:code": 0.0241078,
    "opus:answer": 0.024657
   },
-  "calls": 24
+  "calls": 24,
+  "code_edits_opus": 3,
+  "code_edits_cheap": 0
+ },
+ {
+  "labour": "heavy",
+  "arm": "solo",
+  "seed": 4,
+  "exit": 0,
+  "wall_min": 23.771666666666665,
+  "n_completed": 10,
+  "best_val_bpb": 2.3864,
+  "baseline_val_bpb": 3.3613999999999997,
+  "baseline_steps": 1111.5,
+  "gain_bpb": 0.9749999999999996,
+  "cost_total": 0.5873986,
+  "cost_total_cheap_on_deepseek": 0.5873986,
+  "cost_cheap_model": 0,
+  "cost_opus": 0.5873986,
+  "opus_calls": 26,
+  "opus_out_tokens": 11214,
+  "opus_in_tokens": 529133,
+  "opus_cost_parts": {
+   "input": 0.009312,
+   "cache_write": 0.254816,
+   "cache_read": 0.09899060000000003,
+   "output": 0.22427999999999998
+  },
+  "opus_share_intellectual": 0.35145861770865644,
+  "opus_share_labour": 0.6054987192683129,
+  "opus_share_coordination": 0.0,
+  "opus_share_harness": 0.043042663023030704,
+  "cost_by_model_label": {
+   "opus:read": 0.1515682,
+   "opus:orchestrate": 0.27031170000000004,
+   "opus:bookkeep": 0.0853574,
+   "opus:harness": 0.025283200000000002,
+   "opus:code": 0.0260593,
+   "opus:answer": 0.028818800000000002
+  },
+  "calls": 26,
+  "code_edits_opus": 2,
+  "code_edits_cheap": 0
  },
  {
   "labour": "heavy",
@@ -425,7 +640,9 @@
    "opus:answer": 0.0814838,
    "opus:harness": 0.008953
   },
-  "calls": 90
+  "calls": 90,
+  "code_edits_opus": 2,
+  "code_edits_cheap": 0
  },
  {
   "labour": "heavy",
@@ -464,7 +681,9 @@
    "opus:code": 0.2677216,
    "opus:answer": 0.0910976
   },
-  "calls": 107
+  "calls": 107,
+  "code_edits_opus": 3,
+  "code_edits_cheap": 0
  },
  {
   "labour": "heavy",
@@ -503,7 +722,9 @@
    "opus:harness": 0.014658000000000001,
    "opus:answer": 0.0218246
   },
-  "calls": 88
+  "calls": 88,
+  "code_edits_opus": 3,
+  "code_edits_cheap": 0
  },
  {
   "labour": "heavy",
@@ -542,7 +763,9 @@
    "opus:answer": 0.0225462,
    "opus:harness": 0.010273000000000001
   },
-  "calls": 95
+  "calls": 95,
+  "code_edits_opus": 2,
+  "code_edits_cheap": 0
  },
  {
   "labour": "light",
@@ -575,7 +798,9 @@
    "haiku:code": 0.0229664,
    "haiku:answer": 0.005843200000000001
   },
-  "calls": 37
+  "calls": 37,
+  "code_edits_opus": 0,
+  "code_edits_cheap": 4
  },
  {
   "labour": "light",
@@ -616,7 +841,9 @@
    "opus:code": 0.048938,
    "opus:answer": 0.022827999999999998
   },
-  "calls": 69
+  "calls": 69,
+  "code_edits_opus": 3,
+  "code_edits_cheap": 0
  },
  {
   "labour": "light",
@@ -657,7 +884,9 @@
    "opus:code": 0.033498200000000006,
    "opus:answer": 0.0266194
   },
-  "calls": 73
+  "calls": 73,
+  "code_edits_opus": 2,
+  "code_edits_cheap": 0
  },
  {
   "labour": "light",
@@ -694,13 +923,15 @@
    "haiku:code": 0.0053663,
    "haiku:delegate": 0.019939200000000004,
    "opus:read": 0.1004178,
-   "opus:notes": 0.1211979,
    "opus:code": 0.1432725,
+   "opus:notes": 0.1211979,
    "opus:harness": 0.07109000000000001,
    "haiku:answer": 0.006344600000000001,
    "haiku:harness": 0.0015095
   },
-  "calls": 59
+  "calls": 59,
+  "code_edits_opus": 4,
+  "code_edits_cheap": 1
  },
  {
   "labour": "light",
@@ -743,7 +974,9 @@
    "haiku:harness": 0.00592,
    "haiku:answer": 0.0051481
   },
-  "calls": 69
+  "calls": 69,
+  "code_edits_opus": 4,
+  "code_edits_cheap": 1
  },
  {
   "labour": "light",
@@ -776,7 +1009,9 @@
    "haiku:harness": 0.002456,
    "haiku:answer": 0.0048747
   },
-  "calls": 40
+  "calls": 40,
+  "code_edits_opus": 0,
+  "code_edits_cheap": 4
  },
  {
   "labour": "light",
@@ -814,7 +1049,9 @@
    "opus:code": 0.0417598,
    "opus:answer": 0.0221056
   },
-  "calls": 20
+  "calls": 20,
+  "code_edits_opus": 3,
+  "code_edits_cheap": 0
  },
  {
   "labour": "light",
@@ -852,7 +1089,79 @@
    "opus:code": 0.023240333333333335,
    "opus:answer": 0.0230628
   },
-  "calls": 19
+  "calls": 19,
+  "code_edits_opus": 3,
+  "code_edits_cheap": 0
+ },
+ {
+  "labour": "long",
+  "arm": "cheap_h55",
+  "seed": 1,
+  "exit": 0,
+  "wall_min": 26.154999999999998,
+  "n_completed": 10,
+  "best_val_bpb": 2.42195,
+  "baseline_val_bpb": 3.37175,
+  "baseline_steps": 1079.0,
+  "gain_bpb": 0.9498000000000002,
+  "cost_total": 0.05831403,
+  "cost_total_cheap_on_deepseek": 0.05831403,
+  "cost_cheap_model": 0.05831403,
+  "cost_opus": 0,
+  "opus_calls": 0,
+  "opus_out_tokens": 0,
+  "opus_in_tokens": 0,
+  "opus_cost_parts": {},
+  "opus_share_intellectual": null,
+  "opus_share_labour": null,
+  "opus_share_coordination": null,
+  "opus_share_harness": null,
+  "cost_by_model_label": {
+   "haiku:read": 0.00596449,
+   "haiku:orchestrate": 0.040396635,
+   "haiku:harness": 0.0031526400000000004,
+   "haiku:bookkeep": 0.0044008,
+   "haiku:code": 0.002702215,
+   "haiku:answer": 0.00169725
+  },
+  "calls": 78,
+  "code_edits_opus": 0,
+  "code_edits_cheap": 4
+ },
+ {
+  "labour": "long",
+  "arm": "cheap_h55",
+  "seed": 2,
+  "exit": 0,
+  "wall_min": 23.383333333333333,
+  "n_completed": 10,
+  "best_val_bpb": 2.36815,
+  "baseline_val_bpb": 3.35575,
+  "baseline_steps": 1125.0,
+  "gain_bpb": 0.9876,
+  "cost_total": 0.04265075,
+  "cost_total_cheap_on_deepseek": 0.04265075,
+  "cost_cheap_model": 0.04265075,
+  "cost_opus": 0,
+  "opus_calls": 0,
+  "opus_out_tokens": 0,
+  "opus_in_tokens": 0,
+  "opus_cost_parts": {},
+  "opus_share_intellectual": null,
+  "opus_share_labour": null,
+  "opus_share_coordination": null,
+  "opus_share_harness": null,
+  "cost_by_model_label": {
+   "haiku:read": 0.001399445,
+   "haiku:orchestrate": 0.033054515000000007,
+   "haiku:harness": 0.0015707400000000002,
+   "haiku:bookkeep": 0.00370967,
+   "haiku:code": 0.0018368999999999998,
+   "haiku:answer": 0.00107948
+  },
+  "calls": 75,
+  "code_edits_opus": 0,
+  "code_edits_cheap": 4
  },
  {
   "labour": "long",
@@ -894,7 +1203,9 @@
    "opus:bookkeep": 0.0182134,
    "opus:answer": 0.0280528
   },
-  "calls": 175
+  "calls": 175,
+  "code_edits_opus": 3,
+  "code_edits_cheap": 0
  },
  {
   "labour": "long",
@@ -936,7 +1247,9 @@
    "opus:bookkeep": 0.0137936,
    "opus:answer": 0.025342
   },
-  "calls": 132
+  "calls": 132,
+  "code_edits_opus": 4,
+  "code_edits_cheap": 0
  },
  {
   "labour": "long",
@@ -977,7 +1290,94 @@
    "opus:code": 0.0717396,
    "opus:answer": 0.028991199999999998
   },
-  "calls": 162
+  "calls": 162,
+  "code_edits_opus": 3,
+  "code_edits_cheap": 0
+ },
+ {
+  "labour": "long",
+  "arm": "dispatch_h55",
+  "seed": 1,
+  "exit": 0,
+  "wall_min": 24.808333333333334,
+  "n_completed": 10,
+  "best_val_bpb": 2.4123,
+  "baseline_val_bpb": 3.39745,
+  "baseline_steps": 1015.5,
+  "gain_bpb": 0.98515,
+  "cost_total": 0.66496681,
+  "cost_total_cheap_on_deepseek": 0.66496681,
+  "cost_cheap_model": 0.03450141,
+  "cost_opus": 0.6304654,
+  "opus_calls": 34,
+  "opus_out_tokens": 11720,
+  "opus_in_tokens": 749919,
+  "opus_cost_parts": {
+   "input": 0.019211999999999993,
+   "cache_write": 0.23367199999999994,
+   "cache_read": 0.14318140000000004,
+   "output": 0.23440000000000003
+  },
+  "opus_share_intellectual": 0.17051625672082876,
+  "opus_share_labour": 0.7663024806753868,
+  "opus_share_coordination": 0.0,
+  "opus_share_harness": 0.06318126260378445,
+  "cost_by_model_label": {
+   "opus:read": 0.042148599999999994,
+   "haiku:harness": 0.0117931,
+   "opus:orchestrate": 0.3833038,
+   "haiku:orchestrate": 0.02270831,
+   "opus:harness": 0.039833600000000004,
+   "opus:bookkeep": 0.0998234,
+   "opus:code": 0.0366104,
+   "opus:answer": 0.0287456
+  },
+  "calls": 142,
+  "code_edits_opus": 3,
+  "code_edits_cheap": 0
+ },
+ {
+  "labour": "long",
+  "arm": "dispatch_h55",
+  "seed": 2,
+  "exit": 0,
+  "wall_min": 24.325,
+  "n_completed": 10,
+  "best_val_bpb": 2.4035,
+  "baseline_val_bpb": 3.39065,
+  "baseline_steps": 1033.0,
+  "gain_bpb": 0.9871499999999997,
+  "cost_total": 0.55844279,
+  "cost_total_cheap_on_deepseek": 0.55844279,
+  "cost_cheap_model": 0.03396299,
+  "cost_opus": 0.5244798,
+  "opus_calls": 30,
+  "opus_out_tokens": 9319,
+  "opus_in_tokens": 611561,
+  "opus_cost_parts": {
+   "input": 0.012768000000000002,
+   "cache_write": 0.20888000000000004,
+   "cache_read": 0.11645180000000004,
+   "output": 0.18638
+  },
+  "opus_share_intellectual": 0.16522638240786391,
+  "opus_share_labour": 0.7658260623192735,
+  "opus_share_coordination": 0.0,
+  "opus_share_harness": 0.06894755527286274,
+  "cost_by_model_label": {
+   "opus:read": 0.0301814,
+   "haiku:harness": 0.0106592,
+   "haiku:orchestrate": 0.022268790000000007,
+   "haiku:read": 0.0010350000000000001,
+   "opus:orchestrate": 0.3129893000000001,
+   "opus:harness": 0.0361616,
+   "opus:bookkeep": 0.088671,
+   "opus:code": 0.0283071,
+   "opus:answer": 0.0281694
+  },
+  "calls": 140,
+  "code_edits_opus": 3,
+  "code_edits_cheap": 0
  },
  {
   "labour": "long",
@@ -1015,7 +1415,9 @@
    "opus:code": 0.020688699999999997,
    "opus:answer": 0.028856200000000002
   },
-  "calls": 42
+  "calls": 42,
+  "code_edits_opus": 2,
+  "code_edits_cheap": 0
  },
  {
   "labour": "long",
@@ -1053,7 +1455,9 @@
    "opus:code": 0.022908233333333333,
    "opus:answer": 0.028859
   },
-  "calls": 69
+  "calls": 69,
+  "code_edits_opus": 3,
+  "code_edits_cheap": 0
  },
  {
   "labour": "long",
@@ -1091,7 +1495,49 @@
    "opus:code": 0.029104433333333336,
    "opus:answer": 0.030569
   },
-  "calls": 49
+  "calls": 49,
+  "code_edits_opus": 3,
+  "code_edits_cheap": 0
+ },
+ {
+  "labour": "long",
+  "arm": "solo",
+  "seed": 4,
+  "exit": 0,
+  "wall_min": 21.913333333333334,
+  "n_completed": 10,
+  "best_val_bpb": 2.4017999999999997,
+  "baseline_val_bpb": 3.3498,
+  "baseline_steps": 1140.0,
+  "gain_bpb": 0.9480000000000004,
+  "cost_total": 0.9520668,
+  "cost_total_cheap_on_deepseek": 0.9520668,
+  "cost_cheap_model": 0,
+  "cost_opus": 0.9520668,
+  "opus_calls": 63,
+  "opus_out_tokens": 16438,
+  "opus_in_tokens": 1414367,
+  "opus_cost_parts": {
+   "input": 0.015503999999999995,
+   "cache_write": 0.3340559999999998,
+   "cache_read": 0.2737468000000001,
+   "output": 0.32875999999999983
+  },
+  "opus_share_intellectual": 0.15363802904025922,
+  "opus_share_labour": 0.7559599109362211,
+  "opus_share_coordination": 0.0,
+  "opus_share_harness": 0.09040206002351935,
+  "cost_by_model_label": {
+   "opus:read": 0.0751984,
+   "opus:orchestrate": 0.6469306666666665,
+   "opus:harness": 0.08606879999999999,
+   "opus:bookkeep": 0.07279366666666667,
+   "opus:code": 0.03998906666666667,
+   "opus:answer": 0.0310862
+  },
+  "calls": 63,
+  "code_edits_opus": 3,
+  "code_edits_cheap": 0
  },
  {
   "labour": "long",
@@ -1131,7 +1577,9 @@
    "opus:code": 0.2598274,
    "opus:answer": 0.08245380000000001
   },
-  "calls": 105
+  "calls": 105,
+  "code_edits_opus": 3,
+  "code_edits_cheap": 0
  },
  {
   "labour": "long",
@@ -1170,7 +1618,9 @@
    "opus:code": 0.1277739,
    "opus:answer": 0.0318028
   },
-  "calls": 129
+  "calls": 129,
+  "code_edits_opus": 2,
+  "code_edits_cheap": 0
  },
  {
   "labour": "long",
@@ -1209,7 +1659,9 @@
    "opus:answer": 0.0241292,
    "opus:harness": 0.007777
   },
-  "calls": 101
+  "calls": 101,
+  "code_edits_opus": 3,
+  "code_edits_cheap": 0
  },
  {
   "labour": "long",
@@ -1248,7 +1700,9 @@
    "opus:answer": 0.0193544,
    "opus:harness": 0.010336999999999999
   },
-  "calls": 94
+  "calls": 94,
+  "code_edits_opus": 3,
+  "code_edits_cheap": 0
  },
  {
   "labour": "long",
@@ -1288,7 +1742,9 @@
    "opus:code": 1.1493075,
    "opus:answer": 0.6433854
   },
-  "calls": 242
+  "calls": 242,
+  "code_edits_opus": 3,
+  "code_edits_cheap": 0
  },
  {
   "labour": "long",
@@ -1327,6 +1783,8 @@
    "opus:code": 0.6402776,
    "opus:answer": 0.0369844
   },
-  "calls": 170
+  "calls": 170,
+  "code_edits_opus": 3,
+  "code_edits_cheap": 0
  }
 ]

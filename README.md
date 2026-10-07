@@ -4,31 +4,62 @@
 
 When Claude Code runs an autoresearch loop, Opus spends most of its money on **labour**:
 running `.py` files, e2e checks, queueing jobs, waiting for jobs, reading logs, `git`.
-token-marxing hands that labour to a cheap model (DeepSeek V4.1 Flash, Haiku, ...) **inside the
-same chat**, and switches back to Opus for the **intellectual work**: deciding what to try and
+token-marxing hands that labour to a cheap model (Claude Haiku 5.5, DeepSeek V4.1 Flash, ...)
+**inside the same chat**, and keeps Opus for the **intellectual work**: deciding what to try and
 writing the PyTorch code.
 
-How it works:
+**[`marx/router.py`](marx/router.py)** is a stdlib-only proxy that you point `ANTHROPIC_BASE_URL` at.
+It picks the model that answers each turn of one Claude Code conversation, and writes a per-call
+usage and cost ledger, which is how every number below was measured. It switches in one of two
+ways:
 
-- **[`marx/router.py`](marx/router.py)** is a stdlib-only proxy that you point `ANTHROPIC_BASE_URL`
-  at. For each request of the main conversation it picks the model from the conversation itself.
-  The agent hands over with a one-line shell command:
-  `marx-mode labour "exp 3, ctx16, …"` gives the next turns to the cheap model, and
-  `marx-mode think "<report>"` gives them back to Opus. Both models work in one chat history.
-  The router also writes a per-call usage and cost ledger, which is how every number below was
-  measured.
-- **Elide**, the recommended mode: Opus sees each labour streak as just the operator's hand-back
-  report, while the cheap model sees everything. Without this, Opus pays to ingest every line of
-  polling output.
-- What made it work reliably is described in [Making one chat work](#making-one-chat-work):
-  a Stop hook so the cheap model can't end the session, prompt-cache re-anchoring on each
-  switch, and an operator playbook.
-- For comparison, the repo also has a **subagent** version, where the operator runs in its own
-  chat and returns a short report ([`claude/agents/operator.md`](claude/agents/operator.md)),
-  and an inverted version (the cheap model drives and calls an Opus researcher), which is not
-  recommended.
+- **Invisible switching** (`routes.dispatch*.json`): the agent gets ordinary instructions and is
+  never told about models or switching. Before each turn, a tiny classifier call to Haiku 5.5
+  ([`marx/dispatch.py`](marx/dispatch.py)) decides whether the next step is a judgment call
+  (Opus) or routine execution (the cheap model).
+- **Explicit hand-offs** (`routes.switch*.json`): the agent itself runs `marx-mode labour "…"`
+  to give the next turns to the cheap model, and `marx-mode think "<report>"` to take them back.
+  With **elide**, Opus sees each labour stretch as just the operator's report.
 
-## Results
+For comparison, the repo also has a subagent version
+([`claude/agents/operator.md`](claude/agents/operator.md)) and an inverted version (a cheap driver
+calling an Opus researcher).
+
+## Update: Claude Haiku 5.5
+
+Haiku 5.5 was released in October 2026, at **$0.10/M input, $0.50/M output and $0.01/M cache
+hits** for prompts up to 100k tokens (5x above that). That's 10x below Haiku 4.5, and below
+DeepSeek V4.1 Flash's peak rates. It takes Claude Code's Opus-shaped requests unmodified. These
+runs use it at its real price, on the heavy and long-jobs conditions described below. Mean $ per
+run:
+
+| | heavy | long jobs | best val_bpb (all runs) |
+|---|---|---|---|
+| Opus alone | $0.52 | $0.97 | 2.34-2.43 |
+| Invisible switching, Opus + Haiku 5.5 | $0.47 (−10%) | $0.61 (−37%) | 2.40-2.42 |
+| Explicit hand-offs + elide (Haiku 4.5 priced as DeepSeek, earlier runs) | $0.30 | $0.29 | 2.43-2.44 |
+| **Haiku 5.5 alone** | **$0.03** | **$0.05** | **2.37-2.42** |
+
+- **On this task, Haiku 5.5 alone is as good as Opus, for 1/15-1/20 of the price.** It ran
+  4 runs at 2.37-2.42 best val_bpb, while Opus alone on comparable machine speed reached
+  2.39-2.43. The likely reason is that the toy task is too easy to separate the models: the
+  winning ideas (AdamW, a higher learning rate) are obvious. On your real research, check
+  whether Opus's judgment actually beats Haiku 5.5 before paying for it.
+- **Invisible switching works**, with no prompt changes: a plain Claude Code session was routed
+  turn by turn, and the dispatcher cost ~$0.01 per run. It saved less than explicit hand-offs
+  because a turn-by-turn classifier can only move *whole turns*. Opus often packs labour into
+  the same turn as a decision (edit + check + submit + wait in one command), and when unsure the
+  classifier errs toward Opus. With long jobs, Opus took 32 calls instead of 56, because the pure
+  polling turns moved to Haiku. But 77% of what Opus still spent was on turns tagged as labour,
+  where it had bundled routine work with a decision.
+- **Explicit hand-offs need the agent to know about the split, and that caused a failure.** In
+  one shared chat every assistant turn looks like "me". Haiku 5.5, as operator, read Opus's
+  `train.py` edit as its own forbidden action and reverted it three times, until the run stalled.
+  Telling it which turns came from the other model fixes that. Invisible switching avoids the
+  issue entirely, because both models get the same instructions and no rules about who may
+  edit what.
+
+## Results (Haiku 4.5 as the cheap model)
 
 A toy autoresearch task runs on CPU in [`bench/`](bench/). The task is byte-level language
 modelling on Python source with a 60 s training budget. An agent gets a baseline plus 4
@@ -155,20 +186,29 @@ fewer tokens**, not from converting output into input.
 
 ## Use it on your own project
 
+**Invisible switching** (nothing changes in your project or prompts):
+
+```bash
+(cd $MARX && python -m marx.router --config marx/routes.dispatch_elide.haiku55.json --port 8787 --ledger ledger.jsonl &)
+ANTHROPIC_BASE_URL=http://127.0.0.1:8787 claude --model opus
+python -m marx.report $MARX/ledger.jsonl                    # where the money went
+```
+
+`routes.dispatch.haiku55.json` does the same without condensing labour stretches in Opus's
+view. The `.deepseek` variants send labour turns to DeepSeek instead; set `DEEPSEEK_API_KEY`.
+To change what counts as routine, edit `CLASSIFIER_SYSTEM` in `marx/dispatch.py`.
+
+**Explicit hand-offs** (cheapest in these runs, but the agent must follow a protocol):
+
 ```bash
 # in your project, with this repo at $MARX
 cat $MARX/claude/CLAUDE.switch.md >> CLAUDE.md            # the hand-over protocol for both models
 export PATH=$MARX/bin:$PATH                                 # provides `marx-mode`
-mkdir -p .claude && cat > .claude/settings.json <<EOF
+mkdir -p .claude && cat > .claude/settings.json <<JSON
 {"hooks": {"Stop": [{"hooks": [{"type": "command", "command": "$MARX/claude/hooks/operator_hands_back.py"}]}]}}
-EOF
-
-# route: Opus thinks, DeepSeek labours, one conversation
-export DEEPSEEK_API_KEY=...
-(cd $MARX && python -m marx.router --config marx/routes.switch_elide.deepseek.json --port 8787 --ledger ledger.jsonl &)
+JSON
+(cd $MARX && python -m marx.router --config marx/routes.switch_elide.haiku55.json --port 8787 --ledger ledger.jsonl &)
 ANTHROPIC_BASE_URL=http://127.0.0.1:8787 claude --model opus
-
-python -m marx.report $MARX/ledger.jsonl                    # where the money went
 ```
 
 Adapt the operator's playbook to your pipeline in `claude/OPERATOR.switch.md` (what to run,
@@ -179,9 +219,9 @@ speaks the Anthropic Messages API works, such as DeepSeek, Kimi or GLM. The suba
 Claude Code's `haiku` slot to DeepSeek.
 
 Caveats: the DeepSeek route itself was not run end to end, because this environment had no
-DeepSeek key. Every number above comes from Haiku traffic repriced per token, and DeepSeek's
-tokenizer will count somewhat differently. The task is a toy, and samples are 2-3 runs per
-cell, so read the percentages as directional.
+DeepSeek key. The Haiku 4.5 numbers are Haiku traffic repriced per token as DeepSeek; the
+Haiku 5.5 numbers are real list prices. The task is a toy, and samples are 2-4 runs per cell,
+so read the percentages as directional.
 
 ## Reproduce
 
@@ -193,7 +233,7 @@ python experiments/run_batch.py --jobs 4 \
 python experiments/analyze.py && python experiments/plot.py
 ```
 
-Arms: `solo`, `delegate`, `switch`, `switch_elide`, `inverted`, `cheap`. Conditions: `light`,
+Arms: `solo`, `delegate`, `switch`, `switch_elide`, `dispatch_h55`, `cheap_h55`, `inverted`, `cheap`. Conditions: `light`,
 `heavy`, `long`. Each run drives the logged-in `claude` CLI headless, costs real money (about
 $0.3-1 per run with Haiku as the cheap model), and takes 15-30 minutes.
 
@@ -202,7 +242,8 @@ $0.3-1 per run with Haiku as the cheap model), and takes 15-30 minutes.
 | path | what |
 |---|---|
 | `marx/router.py` | routing proxy: per-model routes, one-chat mode switching, cache re-anchoring, elision, ledger |
-| `marx/routes.switch_elide.deepseek.json` | recommended config (also `.anthropic`, and `routes.switch.*` without elision) |
+| `marx/dispatch.py` | invisible switching: per-turn classifier, per-model turn bookkeeping, cache anchoring, elision |
+| `marx/routes.dispatch*.json`, `marx/routes.switch*.json` | invisible / explicit switching configs for Haiku 5.5 (`.haiku55`), DeepSeek, Haiku 4.5 (`.anthropic`) |
 | `marx/make_switch_routes.py` | generates the switch configs from `claude/OPERATOR.switch.md` |
 | `marx/prices.py`, `marx/report.py` | price table; ledger summary with `--as-if` repricing |
 | `bin/marx-mode` | the hand-over command |
