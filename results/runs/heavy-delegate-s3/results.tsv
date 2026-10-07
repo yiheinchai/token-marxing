@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001, j003	3.4841	keep	unmodified baseline (CausalMLP ctx8, SGD lr1e-2 mom0.9)
+1	j004, j005	2.5144	keep	AdamW lr3e-3 instead of SGD momentum
+2	j006, j008	2.5627	discard	MLP context 8->16 bytes
+3	j009, j010	2.4862	keep	AdamW peak lr5e-3 linearly decayed to 0 over time budget
+4	j011, j012	2.4250	keep	GELU instead of tanh hidden activation

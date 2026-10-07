@@ -1,0 +1,137 @@
+{
+ "arm": "delegate",
+ "seed": 3,
+ "labour": "heavy",
+ "main_model": "claude-opus-5-5",
+ "agents": [
+  "operator"
+ ],
+ "effort": "high",
+ "exit": 0,
+ "wall_s": 1576.5,
+ "git_log": [
+  "b28687f exp4: GELU instead of tanh hidden activation val_bpb=2.4250 Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com> Claude-Session: https://claude.ai/code/session_012JiyWsF2AYNSKgwVuDW4mm",
+  "2de529b exp3: AdamW peak lr5e-3 linearly decayed to 0 over time budget val_bpb=2.4862 Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com> Claude-Session: https://claude.ai/code/session_012JiyWsF2AYNSKgwVuDW4mm",
+  "27fe666 exp1: AdamW lr3e-3 instead of SGD momentum val_bpb=2.5144 Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com> Claude-Session: https://claude.ai/code/session_012JiyWsF2AYNSKgwVuDW4mm",
+  "a2c8f08 exp0: unmodified baseline val_bpb=3.4841 Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com> Claude-Session: https://claude.ai/code/session_012JiyWsF2AYNSKgwVuDW4mm",
+  "8d43aa8 baseline"
+ ],
+ "jobs": [
+  {
+   "id": "j001",
+   "name": "baseline-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 801.0,
+   "train_time_s": 60.0,
+   "val_bpb": 3.5001
+  },
+  {
+   "id": "j002",
+   "name": "baseline-s2",
+   "seed": 2,
+   "state": "NODE_FAIL"
+  },
+  {
+   "id": "j003",
+   "name": "baseline-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 812.0,
+   "train_time_s": 60.0,
+   "val_bpb": 3.4681
+  },
+  {
+   "id": "j004",
+   "name": "adamw-s1",
+   "seed": 0,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 767.0,
+   "train_time_s": 60.1,
+   "val_bpb": 2.5079
+  },
+  {
+   "id": "j005",
+   "name": "adamw-s2",
+   "seed": 0,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 736.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.5209
+  },
+  {
+   "id": "j006",
+   "name": "ctx16-s1",
+   "seed": 0,
+   "state": "COMPLETED",
+   "params": 170496.0,
+   "steps": 670.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.5602
+  },
+  {
+   "id": "j007",
+   "name": "ctx16-s2",
+   "seed": 0,
+   "state": "NODE_FAIL"
+  },
+  {
+   "id": "j008",
+   "name": "ctx16-s2",
+   "seed": 0,
+   "state": "COMPLETED",
+   "params": 170496.0,
+   "steps": 649.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.5653
+  },
+  {
+   "id": "j009",
+   "name": "lrdecay-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 791.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.4821
+  },
+  {
+   "id": "j010",
+   "name": "lrdecay-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 805.0,
+   "train_time_s": 60.1,
+   "val_bpb": 2.4903
+  },
+  {
+   "id": "j011",
+   "name": "gelu-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 890.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.433
+  },
+  {
+   "id": "j012",
+   "name": "gelu-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 852.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.417
+  }
+ ],
+ "n_completed": 10,
+ "n_experiments": 7,
+ "best_val_bpb": 2.425,
+ "baseline_val_bpb": 3.4841
+}
