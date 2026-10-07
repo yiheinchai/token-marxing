@@ -1,0 +1,125 @@
+{
+ "arm": "solo",
+ "seed": 3,
+ "labour": "heavy",
+ "main_model": "claude-opus-5-5",
+ "agents": [],
+ "effort": "high",
+ "exit": 0,
+ "wall_s": 1351.4,
+ "git_log": [
+  "1d55245 results: exp4 discard",
+  "e4a5540 exp3: AdamW LR 3e-3 -> 1e-2 val_bpb=2.4228",
+  "07b4da3 exp1: AdamW lr3e-3 wd0.01 instead of SGD val_bpb=2.4839",
+  "1e72d42 exp0: baseline val_bpb=3.5217",
+  "8d43aa8 baseline"
+ ],
+ "jobs": [
+  {
+   "id": "j001",
+   "name": "baseline",
+   "seed": 0,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 728.0,
+   "train_time_s": 60.0,
+   "val_bpb": 3.5217
+  },
+  {
+   "id": "j002",
+   "name": "adamw-s1",
+   "seed": 1,
+   "state": "NODE_FAIL"
+  },
+  {
+   "id": "j003",
+   "name": "adamw-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 739.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.5079
+  },
+  {
+   "id": "j004",
+   "name": "adamw-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 803.0,
+   "train_time_s": 60.1,
+   "val_bpb": 2.4599
+  },
+  {
+   "id": "j005",
+   "name": "cosine-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 765.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.6887
+  },
+  {
+   "id": "j006",
+   "name": "cosine-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 792.0,
+   "train_time_s": 60.1,
+   "val_bpb": 2.6824
+  },
+  {
+   "id": "j007",
+   "name": "lr1e-2-s1",
+   "seed": 1,
+   "state": "NODE_FAIL"
+  },
+  {
+   "id": "j008",
+   "name": "lr1e-2-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 804.0,
+   "train_time_s": 60.1,
+   "val_bpb": 2.424
+  },
+  {
+   "id": "j009",
+   "name": "lr1e-2-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 875.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.4216
+  },
+  {
+   "id": "j010",
+   "name": "ctx16-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 170496.0,
+   "steps": 663.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.5322
+  },
+  {
+   "id": "j011",
+   "name": "ctx16-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 170496.0,
+   "steps": 722.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.5358
+  }
+ ],
+ "n_completed": 9,
+ "n_experiments": 5,
+ "best_val_bpb": 2.4228,
+ "baseline_val_bpb": 3.5217
+}
