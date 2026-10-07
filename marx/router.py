@@ -194,6 +194,12 @@ def make_handler(router):
             if isinstance(payload, dict):
                 route.rewrite(payload)
                 body = json.dumps(payload).encode()
+                if os.environ.get("MARX_CAPTURE_DIR"):  # debugging: keep every forwarded request body
+                    with router.lock:
+                        router.n_captured = getattr(router, "n_captured", 0) + 1
+                        n = router.n_captured
+                    with open(os.path.join(os.environ["MARX_CAPTURE_DIR"], f"{n:04d}-{route.name}.json"), "wb") as fh:
+                        fh.write(body)
 
             headers = {k: v for k, v in self.headers.items() if k.lower() not in HOP_BY_HOP}
             headers["Accept-Encoding"] = "identity"   # so the ledger can read usage from the stream
