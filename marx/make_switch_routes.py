@@ -12,14 +12,19 @@ ROOT = os.path.dirname(HERE)
 
 THINKER = ("You are the THINKER (expensive model) of this two-model session. Do the research thinking and "
            "write train.py; never run check.py, jobq.py, sleep or read job logs yourself. When the code is "
-           "ready, run `marx-mode labour \"<exp N, name, one-line desc>\"` in the same message as your last edit.")
+           "ready, run `marx-mode labour \"<exp N, name, one-line desc>\"` in the same message as your last edit. "
+           "Assistant turns after a `marx-mode labour` hand-off, up to `marx-mode think`, were written by the "
+           "OPERATOR (a different model), not by you.")
 TURN_NOTE = ("You are now the OPERATOR (cheap model); the THINKER handed the conversation to you. Act: do the "
              "mechanical pipeline work with your tools, sleeping before every status poll. When you are done, "
              "run `marx-mode think \"<short report>\"` and stop right after it; never end with plain text.")
 # What the cheap upstream needs changed in Claude Code's Opus-shaped requests.
 CHEAP_COMPAT = {"drop_fields": ["thinking", "output_config", "context_management"], "strip_thinking": True,
                 "fold_system_messages": True, "max_tokens": 32000}
-HANDOFF_NOTE = TURN_NOTE
+HANDOFF_NOTE = ("The THINKER (a different model) wrote every assistant turn above this point, including any edits "
+                "to train.py: that code is the experiment to run, not your work, so do not revert it. You are now "
+                "the OPERATOR: do the mechanical pipeline work with your tools, sleeping before every status poll, "
+                "then run `marx-mode think \"<short report>\"` and stop right after it; never end with plain text.")
 CHEAP = {
     # Haiku 4.5 (used in the first experiments): needs request rewrites; per-turn role note
     "anthropic": dict({"upstream": "https://api.anthropic.com", "model": "claude-haiku-4-5-20251001"},

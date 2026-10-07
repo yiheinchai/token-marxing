@@ -1,2 +1,0 @@
-exp	job	val_bpb	status	description
-0	j001,j003	3.3694	keep	unmodified baseline (CausalMLP ctx8 emb24 hid256, SGD lr1e-2 mom0.9, bs32)
