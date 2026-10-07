@@ -1,0 +1,75 @@
+{
+ "arm": "inverted_unenforced",
+ "seed": 1,
+ "main_model": "claude-haiku-4-5-20251001",
+ "agents": [
+  "researcher"
+ ],
+ "effort": "high",
+ "exit": 0,
+ "wall_s": 721.4,
+ "git_log": [
+  "72716fa exp4: embed=48 val_bpb=3.1782 (keep) Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com> Claude-Session: https://claude.ai/code/session_012JiyWsF2AYNSKgwVuDW4mm",
+  "81581da exp3: 2_hidden_layers val_bpb=3.4758 (discard) Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com> Claude-Session: https://claude.ai/code/session_012JiyWsF2AYNSKgwVuDW4mm",
+  "c7301be exp2: context=16 val_bpb=3.4021 (discard) Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com> Claude-Session: https://claude.ai/code/session_012JiyWsF2AYNSKgwVuDW4mm",
+  "2754a87 exp1: hidden=512 val_bpb=3.4364 (discard) Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com> Claude-Session: https://claude.ai/code/session_012JiyWsF2AYNSKgwVuDW4mm",
+  "6f1f9bb exp0: baseline val_bpb=3.3333 Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com> Claude-Session: https://claude.ai/code/session_012JiyWsF2AYNSKgwVuDW4mm",
+  "0cba77c baseline"
+ ],
+ "jobs": [
+  {
+   "id": "j001",
+   "name": "exp0-baseline",
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1206.0,
+   "train_time_s": 60.0,
+   "val_bpb": 3.3333
+  },
+  {
+   "id": "j002",
+   "name": "exp1-hidden512",
+   "state": "NODE_FAIL"
+  },
+  {
+   "id": "j003",
+   "name": "exp1-hidden512-retry",
+   "state": "COMPLETED",
+   "params": 236288.0,
+   "steps": 806.0,
+   "train_time_s": 60.1,
+   "val_bpb": 3.4364
+  },
+  {
+   "id": "j004",
+   "name": "exp2-context16",
+   "state": "COMPLETED",
+   "params": 170496.0,
+   "steps": 1068.0,
+   "train_time_s": 60.0,
+   "val_bpb": 3.4021
+  },
+  {
+   "id": "j005",
+   "name": "exp3-2hidden",
+   "state": "COMPLETED",
+   "params": 187136.0,
+   "steps": 917.0,
+   "train_time_s": 60.0,
+   "val_bpb": 3.4758
+  },
+  {
+   "id": "j006",
+   "name": "exp4-embed48",
+   "state": "COMPLETED",
+   "params": 176640.0,
+   "steps": 1114.0,
+   "train_time_s": 60.0,
+   "val_bpb": 3.1782
+  }
+ ],
+ "n_completed": 5,
+ "best_val_bpb": 3.1782,
+ "baseline_val_bpb": 3.3333,
+ "labour": "light"
+}

@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001,j003	3.3001	keep	unmodified baseline (CausalMLP ctx8, SGD momentum lr1e-2)
+1	j004,j005,j006	2.4083	keep	AdamW lr3e-3 wd0.01 instead of SGD momentum
+2	j009,j008	3.1977	discard	2-layer d128 causal transformer (tied emb, 128 ctx, 50-step warmup) replacing ctx8 MLP
+3	j010,j011	2.4389	discard	MLP context 8->16 bytes
+4	j012,j013	2.4552	discard	time-based cosine LR decay 3e-3 -> 1.5e-4 over the budget (exp1 MLP+AdamW)

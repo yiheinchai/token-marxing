@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001	3.3001	keep	baseline (CausalMLP ctx8, SGD momentum lr1e-2)
+1	j003	2.3990	keep	AdamW lr3e-3 instead of SGD (j002 NODE_FAIL, resubmitted)
+2	j004	2.3269	keep	peak lr1e-2 with linear decay to 0 over budget
+3	j005	2.3814	discard	context 8->16 bytes (fewer steps, worse)
+4	j006	2.2803	keep	tanh -> GELU activation

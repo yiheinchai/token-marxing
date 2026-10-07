@@ -1,0 +1,81 @@
+{
+ "arm": "delegate",
+ "seed": 2,
+ "labour": "light",
+ "main_model": "claude-opus-5-5",
+ "agents": [
+  "operator"
+ ],
+ "effort": "high",
+ "exit": 0,
+ "wall_s": 815.8,
+ "git_log": [
+  "597d365 exp4: AdamW constant LR 1e-2 (up from 3e-3) val_bpb=2.3859 Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com> Claude-Session: https://claude.ai/code/session_012JiyWsF2AYNSKgwVuDW4mm",
+  "706dd42 exp2: MLP context 16 bytes, hidden 384 val_bpb=2.4391",
+  "7cd4aaf exp1: AdamW lr3e-3 wd0.01 instead of SGD val_bpb=2.3866",
+  "ddc7a87 exp0: unmodified baseline (CausalMLP ctx8, SGD lr1e-2 mom0.9) val_bpb=3.3172",
+  "0697c3a baseline"
+ ],
+ "jobs": [
+  {
+   "id": "j001",
+   "name": "baseline",
+   "seed": 0,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1260.0,
+   "train_time_s": 60.0,
+   "val_bpb": 3.3172
+  },
+  {
+   "id": "j002",
+   "name": "adamw",
+   "seed": 0,
+   "state": "NODE_FAIL"
+  },
+  {
+   "id": "j003",
+   "name": "adamw",
+   "seed": 0,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1466.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.3866
+  },
+  {
+   "id": "j004",
+   "name": "ctx16-h384",
+   "seed": 0,
+   "state": "COMPLETED",
+   "params": 252544.0,
+   "steps": 851.0,
+   "train_time_s": 60.1,
+   "val_bpb": 2.4391
+  },
+  {
+   "id": "j005",
+   "name": "cosine-lr",
+   "seed": 0,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1372.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.4427
+  },
+  {
+   "id": "j006",
+   "name": "lr1e-2",
+   "seed": 0,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1464.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.3859
+  }
+ ],
+ "n_completed": 5,
+ "n_experiments": 5,
+ "best_val_bpb": 2.3859,
+ "baseline_val_bpb": 3.3172
+}

@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001,j003	3.2904	keep	baseline
+1	j004,j005	2.4506	keep	adamw-sched
+2	j006,j008	2.5187	discard	ctx16-gelu-h384
+3	j009,j010	2.6002	discard	ctx16-emb12
+4	j011,j012	2.3358	keep	adamw-lr1e-2

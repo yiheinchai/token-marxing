@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001,j003	3.2953	keep	Baseline CausalMLP
+1	j004,j005	3.3921	discard	Context=16
+2	j006,j008	3.1147	keep	Embed=48
+3	j009,j010	3.2916	discard	Hidden=512
+4	j011,j012	3.0152	keep	Activation=ReLU

@@ -1,0 +1,138 @@
+{
+ "arm": "delegate",
+ "seed": 1,
+ "labour": "heavy",
+ "main_model": "claude-opus-5-5",
+ "agents": [
+  "operator"
+ ],
+ "effort": "high",
+ "exit": 0,
+ "wall_s": 1581.5,
+ "git_log": [
+  "8f83f9c exp4: record discard",
+  "54caf99 exp3: add missing train.py change (AdamW peak lr 1e-2)",
+  "bbf0c54 exp3: AdamW peak lr 1e-2 (was 3e-3) val_bpb=2.3290",
+  "ebb6957 exp1: AdamW lr3e-3 warmup50 + linear time-decay val_bpb=2.46 (seed avg) Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com> Claude-Session: https://claude.ai/code/session_012JiyWsF2AYNSKgwVuDW4mm",
+  "4041b58 exp0: unmodified baseline val_bpb=3.2947",
+  "52c94cf baseline"
+ ],
+ "jobs": [
+  {
+   "id": "j001",
+   "name": "baseline-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1305.0,
+   "train_time_s": 60.0,
+   "val_bpb": 3.3156
+  },
+  {
+   "id": "j002",
+   "name": "baseline-s2",
+   "seed": 2,
+   "state": "NODE_FAIL"
+  },
+  {
+   "id": "j003",
+   "name": "baseline-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1378.0,
+   "train_time_s": 60.0,
+   "val_bpb": 3.2738
+  },
+  {
+   "id": "j004",
+   "name": "adamw-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1369.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.439
+  },
+  {
+   "id": "j005",
+   "name": "adamw-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1214.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.4905
+  },
+  {
+   "id": "j006",
+   "name": "gpt2l-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 478976.0,
+   "steps": 626.0,
+   "train_time_s": 60.0,
+   "val_bpb": 3.091
+  },
+  {
+   "id": "j007",
+   "name": "gpt2l-s2",
+   "seed": 2,
+   "state": "NODE_FAIL"
+  },
+  {
+   "id": "j008",
+   "name": "gpt2l-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 478976.0,
+   "steps": 651.0,
+   "train_time_s": 60.1,
+   "val_bpb": 3.1074
+  },
+  {
+   "id": "j009",
+   "name": "lr1e2-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1270.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.3249
+  },
+  {
+   "id": "j010",
+   "name": "lr1e2-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1290.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.333
+  },
+  {
+   "id": "j011",
+   "name": "ctx16-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 170496.0,
+   "steps": 1011.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.3988
+  },
+  {
+   "id": "j012",
+   "name": "ctx16-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 170496.0,
+   "steps": 1062.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.3688
+  }
+ ],
+ "n_completed": 10,
+ "n_experiments": 5,
+ "best_val_bpb": 2.32895,
+ "baseline_val_bpb": 3.2946999999999997
+}

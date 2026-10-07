@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001	3.2466	keep	baseline unmodified
+1	j003	2.4437	keep	AdamW optimizer with cosine decay schedule
+2	j004	2.5042	discard	context=16, hidden=384 (larger model was slower per-step)
+3	j005	2.5699	discard	offset-tables per-position embeddings
+4	j006	2.3187	keep	AdamW peak lr=8e-3, warmup=5% (higher learning rate)

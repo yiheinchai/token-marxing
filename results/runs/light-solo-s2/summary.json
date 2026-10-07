@@ -1,0 +1,79 @@
+{
+ "arm": "solo",
+ "seed": 2,
+ "labour": "light",
+ "main_model": "claude-opus-5-5",
+ "agents": [],
+ "effort": "high",
+ "exit": 0,
+ "wall_s": 695.0,
+ "git_log": [
+  "4b4fb0c exp4: GELU activation val_bpb=2.2803",
+  "0836392 exp2: lr1e-2 linear decay val_bpb=2.3269",
+  "85a9f76 exp1: AdamW lr3e-3 val_bpb=2.3990",
+  "caad938 exp0: baseline val_bpb=3.3001",
+  "2b37303 baseline"
+ ],
+ "jobs": [
+  {
+   "id": "j001",
+   "name": "baseline",
+   "seed": 0,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1316.0,
+   "train_time_s": 60.0,
+   "val_bpb": 3.3001
+  },
+  {
+   "id": "j002",
+   "name": "adamw",
+   "seed": 0,
+   "state": "NODE_FAIL"
+  },
+  {
+   "id": "j003",
+   "name": "adamw",
+   "seed": 0,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1312.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.399
+  },
+  {
+   "id": "j004",
+   "name": "lr1e-2-decay",
+   "seed": 0,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1333.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.3269
+  },
+  {
+   "id": "j005",
+   "name": "ctx16",
+   "seed": 0,
+   "state": "COMPLETED",
+   "params": 170496.0,
+   "steps": 1085.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.3814
+  },
+  {
+   "id": "j006",
+   "name": "gelu",
+   "seed": 0,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1370.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.2803
+  }
+ ],
+ "n_completed": 5,
+ "n_experiments": 5,
+ "best_val_bpb": 2.2803,
+ "baseline_val_bpb": 3.3001
+}

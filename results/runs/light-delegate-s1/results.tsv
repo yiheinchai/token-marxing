@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001	3.3261	keep	unmodified baseline (CausalMLP ctx8, SGD momentum lr1e-2)
+1	j003	2.4054	keep	switch SGD-momentum to AdamW lr3e-3
+2	j004	2.5264	discard	widen MLP left context 8->24 bytes
+3	j005	2.451	discard	50-step warmup + time-based linear LR decay to 0
+4	j006	2.4062	discard	raise constant AdamW LR 3e-3 -> 1e-2

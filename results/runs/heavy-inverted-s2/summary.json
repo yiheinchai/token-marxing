@@ -1,0 +1,138 @@
+{
+ "arm": "inverted",
+ "seed": 2,
+ "labour": "heavy",
+ "main_model": "claude-haiku-4-5-20251001",
+ "agents": [
+  "researcher"
+ ],
+ "effort": "high",
+ "exit": 0,
+ "wall_s": 1755.6,
+ "git_log": [
+  "eaaf68c exp4: adamw-lr1e-2 val_bpb=2.3358",
+  "4520721 exp3: ctx16-emb12 val_bpb=2.6002 (discard)",
+  "b07d76a exp2: ctx16-gelu-h384 val_bpb=2.5187 (discard)",
+  "9aa5536 exp1: adamw-sched val_bpb=2.4506",
+  "0325639 exp0: baseline val_bpb=3.2904",
+  "fdc21b3 baseline"
+ ],
+ "jobs": [
+  {
+   "id": "j001",
+   "name": "exp0-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1346.0,
+   "train_time_s": 60.0,
+   "val_bpb": 3.3048
+  },
+  {
+   "id": "j002",
+   "name": "exp0-s2",
+   "seed": 2,
+   "state": "NODE_FAIL"
+  },
+  {
+   "id": "j003",
+   "name": "exp0-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1364.0,
+   "train_time_s": 60.0,
+   "val_bpb": 3.276
+  },
+  {
+   "id": "j004",
+   "name": "exp1-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1237.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.451
+  },
+  {
+   "id": "j005",
+   "name": "exp1-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1312.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.4502
+  },
+  {
+   "id": "j006",
+   "name": "exp2-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 201344.0,
+   "steps": 879.0,
+   "train_time_s": 60.1,
+   "val_bpb": 2.5224
+  },
+  {
+   "id": "j007",
+   "name": "exp2-s2",
+   "seed": 2,
+   "state": "NODE_FAIL"
+  },
+  {
+   "id": "j008",
+   "name": "exp2-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 201344.0,
+   "steps": 975.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.5149
+  },
+  {
+   "id": "j009",
+   "name": "exp3-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 118272.0,
+   "steps": 1321.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.5991
+  },
+  {
+   "id": "j010",
+   "name": "exp3-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 118272.0,
+   "steps": 1364.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.6013
+  },
+  {
+   "id": "j011",
+   "name": "exp4-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1334.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.3416
+  },
+  {
+   "id": "j012",
+   "name": "exp4-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1433.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.3301
+  }
+ ],
+ "n_completed": 10,
+ "n_experiments": 5,
+ "best_val_bpb": 2.3358499999999998,
+ "baseline_val_bpb": 3.2904
+}

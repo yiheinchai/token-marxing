@@ -1,0 +1,70 @@
+{
+ "arm": "cheap",
+ "seed": 0,
+ "main_model": "claude-haiku-4-5-20251001",
+ "agents": [],
+ "effort": "high",
+ "exit": 0,
+ "wall_s": 711.6,
+ "git_log": [
+  "ddbe503 exp4: switch to Adam optimizer val_bpb=2.5658",
+  "87b8b97 exp0: baseline val_bpb=3.2896",
+  "b1371c2 baseline"
+ ],
+ "jobs": [
+  {
+   "id": "j001",
+   "name": "baseline",
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1361.0,
+   "train_time_s": 60.0,
+   "val_bpb": 3.2896
+  },
+  {
+   "id": "j002",
+   "name": "exp1_context16",
+   "state": "NODE_FAIL"
+  },
+  {
+   "id": "j003",
+   "name": "exp1_context16",
+   "state": "COMPLETED",
+   "params": 170496.0,
+   "steps": 1066.0,
+   "train_time_s": 60.0,
+   "val_bpb": 3.4029
+  },
+  {
+   "id": "j004",
+   "name": "exp2_deeper",
+   "state": "COMPLETED",
+   "params": 187136.0,
+   "steps": 945.0,
+   "train_time_s": 60.0,
+   "val_bpb": 3.4627
+  },
+  {
+   "id": "j005",
+   "name": "exp3_bigmodel",
+   "state": "COMPLETED",
+   "params": 205440.0,
+   "steps": 943.0,
+   "train_time_s": 60.0,
+   "val_bpb": 3.3258
+  },
+  {
+   "id": "j006",
+   "name": "exp4_adam",
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1268.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.5658
+  }
+ ],
+ "n_completed": 5,
+ "best_val_bpb": 2.5658,
+ "baseline_val_bpb": 3.2896,
+ "labour": "light"
+}

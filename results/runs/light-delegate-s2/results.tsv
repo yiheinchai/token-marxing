@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001	3.3172	keep	unmodified baseline (CausalMLP ctx8, SGD lr1e-2 mom0.9)
+1	j003	2.3866	keep	AdamW lr3e-3 wd0.01 instead of SGD
+2	j004	2.4391	discard	MLP context 16 bytes, hidden 384
+3	j005	2.4427	discard	time-based cosine LR decay to 0.1x over budget
+4	j006	2.3859	keep	AdamW constant LR 1e-2 (up from 3e-3)

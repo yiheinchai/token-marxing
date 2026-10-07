@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001	3.2896	keep	baseline
+1	j003	3.4029	discard	context16
+2	j004	3.4627	discard	deeper_hidden
+3	j005	3.3258	discard	bigger_embed_hidden
+4	j006	2.5658	keep	adam_optimizer

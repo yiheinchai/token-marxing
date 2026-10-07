@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001	3.3333	keep	baseline
+1	j003	3.4364	discard	hidden=512
+2	j004	3.4021	discard	context=16
+3	j005	3.4758	discard	2_hidden_layers
+4	j006	3.1782	keep	embed=48

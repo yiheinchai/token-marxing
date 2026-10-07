@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001	3.3261	keep	baseline: 8-byte context MLP, SGD lr=1e-2
+1	j003	2.4064	keep	AdamW lr=3e-3 instead of SGD (j002 NODE_FAIL, resubmitted)
+2	j004	2.4526	discard	CONTEXT 8->16 (fewer steps in budget)
+3	j005	2.5027	discard	cosine LR decay to 0 over wall-clock budget
+4	j006	2.3988	keep	AdamW LR 3e-3 -> 1e-2

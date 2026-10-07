@@ -1,0 +1,82 @@
+{
+ "arm": "inverted",
+ "seed": 2,
+ "labour": "light",
+ "main_model": "claude-haiku-4-5-20251001",
+ "agents": [
+  "researcher"
+ ],
+ "effort": "high",
+ "exit": 0,
+ "wall_s": 917.7,
+ "git_log": [
+  "8b4c8d8 exp4: adamw-lr8e-3 val_bpb=2.3187 Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com> Claude-Session: https://claude.ai/code/session_012JiyWsF2AYNSKgwVuDW4mm",
+  "79002c0 exp3: offset-tables val_bpb=2.5699 (discard) Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com> Claude-Session: https://claude.ai/code/session_012JiyWsF2AYNSKgwVuDW4mm",
+  "da1eddd exp2: ctx16-h384 val_bpb=2.5042 (discard) Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com> Claude-Session: https://claude.ai/code/session_012JiyWsF2AYNSKgwVuDW4mm",
+  "249e876 exp1: adamw-cosine val_bpb=2.4437 Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com> Claude-Session: https://claude.ai/code/session_012JiyWsF2AYNSKgwVuDW4mm",
+  "1efba82 exp0: baseline val_bpb=3.2466 Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com> Claude-Session: https://claude.ai/code/session_012JiyWsF2AYNSKgwVuDW4mm",
+  "760ab58 baseline"
+ ],
+ "jobs": [
+  {
+   "id": "j001",
+   "name": "exp0-baseline",
+   "seed": 0,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1517.0,
+   "train_time_s": 60.0,
+   "val_bpb": 3.2466
+  },
+  {
+   "id": "j002",
+   "name": "exp1-adamw-cosine",
+   "seed": 0,
+   "state": "NODE_FAIL"
+  },
+  {
+   "id": "j003",
+   "name": "exp1-adamw-cosine",
+   "seed": 0,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1340.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.4437
+  },
+  {
+   "id": "j004",
+   "name": "exp2-ctx16-h384",
+   "seed": 0,
+   "state": "COMPLETED",
+   "params": 252544.0,
+   "steps": 874.0,
+   "train_time_s": 60.1,
+   "val_bpb": 2.5042
+  },
+  {
+   "id": "j005",
+   "name": "exp3-offset-tables",
+   "seed": 0,
+   "state": "COMPLETED",
+   "params": 590336.0,
+   "steps": 1595.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.5699
+  },
+  {
+   "id": "j006",
+   "name": "exp4-adamw-lr8e-3",
+   "seed": 0,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1461.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.3187
+  }
+ ],
+ "n_completed": 5,
+ "n_experiments": 5,
+ "best_val_bpb": 2.3187,
+ "baseline_val_bpb": 3.2466
+}

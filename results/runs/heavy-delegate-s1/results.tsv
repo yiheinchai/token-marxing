@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001,j003	3.2947	keep	unmodified baseline
+1	j004,j005	2.4647	keep	AdamW lr3e-3 warmup50 + linear time-decay
+2	j006,j008	3.0992	discard	2-layer d128 causal transformer (batch16) replacing n-gram MLP
+3	j009,j010	2.3290	keep	AdamW peak lr 1e-2 (was 3e-3)
+4	j011,j012	2.3838	discard	MLP context 16 bytes (was 8)

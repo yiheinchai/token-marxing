@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001,j003	3.3080	keep	baseline: unmodified CausalMLP ctx8, SGD lr1e-2 (j002 NODE_FAIL, resubmitted as j003)
+1	j004,j005	2.4114	keep	AdamW lr3e-3 wd0.01 instead of SGD+momentum
+2	j006,j008	2.4816	discard	warmup50 + time-based cosine LR decay to 10% (j007 NODE_FAIL, resubmitted as j008)
+3	j009,j010	2.4334	discard	CONTEXT 8->16 (fewer steps: ~1080 vs ~1270)
+4	j011,j012	2.3761	keep	AdamW LR 3e-3 -> 6e-3
