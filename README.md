@@ -59,7 +59,8 @@ Best val_bpb (lower is better; baseline ≈ 3.30) over the same 6 runs per arm:
 statistically significant (Welch t = 1.5). Both arms found the same main ideas (AdamW, a
 higher LR), and Opus thinks just as well when it reads a short report instead of logs.
 Possibly a small cost remains, because the report hides the loss curve. The cheap model on
-its own reached only **2.79** (2.57 / 3.02), so it cannot stand in for Opus on the thinking.
+its own reached only **2.74** (2.57 / 3.02 / 2.65), so it cannot stand in for Opus on the
+thinking.
 
 Full tables: [`results/REPORT.md`](results/REPORT.md). Raw ledgers and transcripts:
 [`results/runs/`](results/runs/).
@@ -84,13 +85,14 @@ Full tables: [`results/REPORT.md`](results/REPORT.md). Raw ledgers and transcrip
    condition. At DeepSeek V4.1 Flash prices ($0.30/$1.20, $0.006/M cache hits) labour is
    almost free, and the end-to-end saving is close to the Opus saving: **−52%** with long jobs.
 4. **Keep Opus as the main loop. Don't make it a stateless subagent.** The inverted design
-   (cheap driver, Opus `researcher` subagent) had the best val_bpb (2.327, n=2) but the
-   *highest* Opus bill ($0.69-0.75 a run, versus $0.37-0.52 for Opus alone). Every researcher
-   call starts cold: it re-reads the program, code and notes, pays the cache write again and
-   re-thinks from scratch. It is also fragile. Prompt rules alone failed: the Haiku driver
-   skipped the researcher and wrote all the code itself, and that run scored 3.18. A PreToolUse
-   hook ([`only_researcher_edits.py`](claude/hooks/only_researcher_edits.py)) had to enforce
-   the rule. After that, the driver still dictated the ideas until the prompts forbade it.
+   (cheap driver, Opus `researcher` subagent) matched Opus alone on quality (2.354, n=4) but
+   had the *highest* Opus bill: $0.56 a run on light and $0.70 on heavy, versus $0.37 / $0.52
+   for Opus alone. Every researcher call starts cold: it re-reads the program, code and notes,
+   pays the cache write again and re-thinks from scratch. It is also fragile. Prompt rules alone
+   failed: the Haiku driver skipped the researcher and wrote all the code itself, and that run
+   scored 3.18. A PreToolUse hook ([`only_researcher_edits.py`](claude/hooks/only_researcher_edits.py))
+   had to enforce the rule. After that, the driver still dictated the ideas until the prompts
+   forbade it.
 5. **Cost is mostly the input side, not output.** Opus's bill splits as ~40% output,
    ~40% cache writes and ~20% cache reads; uncached input is ~2%. See the next section.
 

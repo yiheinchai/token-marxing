@@ -32,6 +32,37 @@
  },
  {
   "labour": "heavy",
+  "arm": "cheap",
+  "seed": 2,
+  "exit": 0,
+  "wall_min": 39.07666666666667,
+  "n_completed": 10,
+  "best_val_bpb": 2.6454500000000003,
+  "baseline_val_bpb": 3.39575,
+  "cost_total": 0.268951,
+  "cost_total_cheap_on_deepseek": 0.03374238,
+  "cost_cheap_model": 0.268951,
+  "cost_opus": 0,
+  "opus_calls": 0,
+  "opus_out_tokens": 0,
+  "opus_in_tokens": 0,
+  "opus_cost_parts": {},
+  "opus_share_intellectual": null,
+  "opus_share_labour": null,
+  "opus_share_coordination": null,
+  "opus_share_harness": null,
+  "cost_by_model_label": {
+   "haiku:read": 0.0341953,
+   "haiku:orchestrate": 0.1274827,
+   "haiku:bookkeep": 0.0674785,
+   "haiku:code": 0.0266324,
+   "haiku:harness": 0.005195,
+   "haiku:answer": 0.007967100000000001
+  },
+  "calls": 41
+ },
+ {
+  "labour": "heavy",
   "arm": "delegate",
   "seed": 1,
   "exit": 0,
@@ -109,6 +140,46 @@
    "opus:answer": 0.027902600000000003
   },
   "calls": 122
+ },
+ {
+  "labour": "heavy",
+  "arm": "inverted",
+  "seed": 1,
+  "exit": 0,
+  "wall_min": 46.625,
+  "n_completed": 10,
+  "best_val_bpb": 2.3449,
+  "baseline_val_bpb": 3.417,
+  "cost_total": 1.0082295000000001,
+  "cost_total_cheap_on_deepseek": 0.686468342,
+  "cost_cheap_model": 0.3664927,
+  "cost_opus": 0.6417368,
+  "opus_calls": 16,
+  "opus_out_tokens": 17351,
+  "opus_in_tokens": 188544,
+  "opus_cost_parts": {
+   "input": 0.00012800000000000002,
+   "cache_write": 0.26759,
+   "cache_read": 0.0269988,
+   "output": 0.34702
+  },
+  "opus_share_intellectual": 0.8742313047966085,
+  "opus_share_labour": 0.0,
+  "opus_share_coordination": 0.0,
+  "opus_share_harness": 0.1257686952033918,
+  "cost_by_model_label": {
+   "haiku:read": 0.08720070000000002,
+   "haiku:orchestrate": 0.1899592,
+   "haiku:harness": 0.0107155,
+   "haiku:bookkeep": 0.0392053,
+   "haiku:delegate": 0.030462100000000002,
+   "opus:read": 0.1680124,
+   "opus:code": 0.2534845,
+   "opus:notes": 0.1395295,
+   "opus:harness": 0.0807104,
+   "haiku:answer": 0.0089499
+  },
+  "calls": 78
  },
  {
   "labour": "heavy",
@@ -330,6 +401,47 @@
    "opus:answer": 0.0266194
   },
   "calls": 73
+ },
+ {
+  "labour": "light",
+  "arm": "inverted",
+  "seed": 1,
+  "exit": 0,
+  "wall_min": 14.35,
+  "n_completed": 5,
+  "best_val_bpb": 2.4164,
+  "baseline_val_bpb": 3.3845,
+  "cost_total": 0.6454346,
+  "cost_total_cheap_on_deepseek": 0.462390404,
+  "cost_cheap_model": 0.20945640000000001,
+  "cost_opus": 0.4359782,
+  "opus_calls": 14,
+  "opus_out_tokens": 10784,
+  "opus_in_tokens": 143623,
+  "opus_cost_parts": {
+   "input": 0.00011200000000000003,
+   "cache_write": 0.199445,
+   "cache_read": 0.0207412,
+   "output": 0.21568
+  },
+  "opus_share_intellectual": 0.8369413883538214,
+  "opus_share_labour": 0.0,
+  "opus_share_coordination": 0.0,
+  "opus_share_harness": 0.16305861164617869,
+  "cost_by_model_label": {
+   "haiku:read": 0.046131099999999994,
+   "haiku:orchestrate": 0.08132299999999999,
+   "haiku:bookkeep": 0.0488427,
+   "haiku:code": 0.0053663,
+   "haiku:delegate": 0.019939200000000004,
+   "opus:read": 0.1004178,
+   "opus:code": 0.1432725,
+   "opus:notes": 0.1211979,
+   "opus:harness": 0.07109000000000001,
+   "haiku:answer": 0.006344600000000001,
+   "haiku:harness": 0.0015095
+  },
+  "calls": 59
  },
  {
   "labour": "light",
