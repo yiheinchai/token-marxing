@@ -2,3 +2,5 @@ __pycache__/
 bench/data/
 bench/.jobs/
 *.pyc
+# runs are force-added when they finish (experiments/run_batch.py --commit)
+results/runs/
