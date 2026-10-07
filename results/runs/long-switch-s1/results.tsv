@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001,j003	3.5152	keep	baseline: CausalMLP ctx8, SGD lr1e-2 mom0.9
+1	j004,j005	2.4840	keep	Adam optimizer, lr3e-3 constant
+2	j006,j008	2.6164	discard	Adam lr3e-3 with linear time decay to 0
+3	j009,j010	2.4365	keep	Adam lr1e-2 constant (better than lr3e-3)
+4	j011,j012	2.5344	discard	ctx16 MLP (larger context hurts performance)
