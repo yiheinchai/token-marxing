@@ -1,0 +1,135 @@
+{
+ "arm": "cheap_h55",
+ "seed": 2,
+ "labour": "long",
+ "main_model": "claude-haiku-5-5",
+ "agents": [],
+ "effort": "high",
+ "exit": 0,
+ "wall_s": 1403.0,
+ "git_log": [
+  "0b843f9 exp4: GELU replaces tanh hidden activation val_bpb=2.3681",
+  "ce15ec3 exp3: Adam lr=1e-2 val_bpb=2.4134",
+  "7647424 exp1: Adam lr=3e-3 replaces SGD val_bpb=2.4304",
+  "ebbea8b exp0: baseline unmodified train.py val_bpb=3.3558",
+  "d9d5e16 baseline"
+ ],
+ "jobs": [
+  {
+   "id": "j001",
+   "name": "baseline-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1131.0,
+   "train_time_s": 60.0,
+   "val_bpb": 3.3651
+  },
+  {
+   "id": "j002",
+   "name": "baseline-s2",
+   "seed": 2,
+   "state": "NODE_FAIL"
+  },
+  {
+   "id": "j003",
+   "name": "baseline-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1119.0,
+   "train_time_s": 60.1,
+   "val_bpb": 3.3464
+  },
+  {
+   "id": "j004",
+   "name": "adam-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1126.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.4264
+  },
+  {
+   "id": "j005",
+   "name": "adam-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1166.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.4344
+  },
+  {
+   "id": "j006",
+   "name": "ctx16-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 170496.0,
+   "steps": 901.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.479
+  },
+  {
+   "id": "j007",
+   "name": "ctx16-s2",
+   "seed": 2,
+   "state": "NODE_FAIL"
+  },
+  {
+   "id": "j008",
+   "name": "ctx16-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 170496.0,
+   "steps": 936.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.454
+  },
+  {
+   "id": "j009",
+   "name": "adamlr1e2-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1139.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.4224
+  },
+  {
+   "id": "j010",
+   "name": "adamlr1e2-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1174.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.4044
+  },
+  {
+   "id": "j011",
+   "name": "gelu-s1",
+   "seed": 1,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1057.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.3658
+  },
+  {
+   "id": "j012",
+   "name": "gelu-s2",
+   "seed": 2,
+   "state": "COMPLETED",
+   "params": 121344.0,
+   "steps": 1022.0,
+   "train_time_s": 60.0,
+   "val_bpb": 2.3705
+  }
+ ],
+ "n_completed": 10,
+ "n_experiments": 5,
+ "best_val_bpb": 2.36815,
+ "baseline_val_bpb": 3.35575
+}

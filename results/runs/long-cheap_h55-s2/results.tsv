@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001,j003	3.3558	keep	baseline: unmodified train.py (CausalMLP ctx=8, SGD lr=1e-2 mom=0.9, bs=32)
+1	j004,j005	2.4304	keep	Adam (lr=3e-3) replaces SGD (lr=1e-2, mom=0.9)
+2	j006,j008	2.4665	discard	CONTEXT 8 -> 16 (on Adam)
+3	j009,j010	2.4134	keep	Adam lr 3e-3 -> 1e-2
+4	j011,j012	2.3681	keep	GELU replaces tanh hidden activation
