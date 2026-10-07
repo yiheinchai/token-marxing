@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+exp0	j001,j003	3.3664	keep	unmodified baseline (seeds 1,2)
+exp1	j004,j005	2.5957	keep	Adam (lr=LR) replaces SGD+momentum
+exp2	j006,j008	2.6762	discard	CONTEXT 8->16 (seed 2 resubmitted after NODE_FAIL j007)
+exp3	j009,j010	2.4255	keep	Adam lr 1e-3 -> 3e-3
+exp4	j011,j012	2.3886	keep	BATCH_SIZE 32 -> 16
