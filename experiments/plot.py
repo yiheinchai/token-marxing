@@ -16,8 +16,8 @@ SERIES = [  # reference palette slots 1-4, fixed order
     ("Opus: overhead (delegating, Claude Code's own calls)", "#1baf7a"),
     ("Cheap model, priced as DeepSeek V4.1 Flash", "#eda100"),
 ]
-ARMS = {"solo": "Opus\nalone", "delegate": "Opus +\noperator", "switch": "same chat,\nswitch", "switch_elide": "same chat,\nlabour elided", "switch_naive": "same chat,\nno cache fix", "inverted": "cheap +\nresearcher",
-        "cheap": "cheap\nalone"}
+ARMS = {"solo": "Opus\nalone", "delegate": "Opus +\noperator\nsubagent", "switch": "one chat,\nmodel\nswitch",
+        "switch_elide": "one chat,\nswitch +\nelide"}
 CONDITIONS = {"light": "Light labour\n(tidy queue)", "heavy": "Heavy labour\n(busy cluster, 2 seeds)",
               "long": "Long jobs\n(jobs outlast a tool call)"}
 
