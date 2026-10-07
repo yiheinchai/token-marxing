@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001,j003	3.3902	keep	baseline (SGD mom 0.9 lr 1e-2, ctx 8 MLP); j002 NODE_FAIL resubmitted as j003
+1	j004,j005	2.4381	keep	AdamW lr 3e-3 wd 0.01 instead of SGD momentum
+2	j006,j008	2.4720	discard	CONTEXT 8->16 (fewer steps, no gain); j007 NODE_FAIL resubmitted as j008
+3	j009,j010	2.5344	discard	linear warmup 30 steps + cosine decay over time budget (peak 3e-3)
+4	j011,j012	2.4013	keep	AdamW lr 3e-3 -> 6e-3 (constant)
