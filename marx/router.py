@@ -6,6 +6,12 @@ an upstream chosen by model name, so e.g. everything Claude Code sends as "haiku
 served by DeepSeek (which speaks the Anthropic API) while Opus traffic goes to Anthropic.
 Every call's token usage and cost is appended to a JSONL ledger.
 
+A route can also *switch models within one conversation*: with a "switch" block, each
+main-loop request is served by the model of the current mode, and the mode is whatever the
+agent last set with the shell command `marx-mode <mode>` (read back from the forwarded
+history). So a cheap model can take the labour turns and Opus the thinking turns of the SAME
+chat, each seeing the full history. See marx/routes.switch.*.json and claude/CLAUDE.switch.md.
+
     python -m marx.router --config marx/routes.deepseek.json --port 8787 --ledger ledger.jsonl
     ANTHROPIC_BASE_URL=http://127.0.0.1:8787 claude ...
 
@@ -16,6 +22,7 @@ import fnmatch
 import http.client
 import json
 import os
+import re
 import ssl
 import sys
 import threading
@@ -31,18 +38,102 @@ HOP_BY_HOP = {"connection", "keep-alive", "proxy-authenticate", "proxy-authoriza
               "accept-encoding"}
 
 
+MODE_RE = re.compile(r"marx-mode\s+(\w+)")
+
+
 class Route:
-    def __init__(self, spec):
-        self.name = spec.get("name") or spec["match"]
-        self.match = spec["match"]
-        self.upstream = urllib.parse.urlsplit(spec["upstream"])
+    def __init__(self, spec, name=None):
+        self.name = name or spec.get("name") or spec.get("match")
+        self.match = spec.get("match", "*")
+        self.upstream = urllib.parse.urlsplit(spec["upstream"]) if "upstream" in spec else None
         self.api_key_env = spec.get("api_key_env")   # None -> pass client auth through
         self.model = spec.get("model")               # rewrite the model name
         self.drop_fields = spec.get("drop_fields", [])
         self.drop_betas = spec.get("drop_betas", False)
+        self.strip_thinking = spec.get("strip_thinking", False)  # for upstreams that can't take other models' thinking
+        self.system_append = spec.get("system_append")
+        self.max_tokens = spec.get("max_tokens")     # cap: the client may ask for more than this model allows
+        self.fold_system_messages = spec.get("fold_system_messages", False)  # for models without mid-chat system
+        # Reminder appended to the newest user message. Only for models without Opus-style
+        # preserved-thinking checks: the next request sends that message without the note,
+        # which those models would treat as an edit of history.
+        self.turn_note = spec.get("turn_note")
+        # Same-conversation model switching: the conversation itself says who acts next, via the
+        # last `marx-mode <mode>` shell command in the history. Each mode is a route of its own.
+        sw = spec.get("switch")
+        self.modes = {m: Route(sub, f"{self.name}:{m}") for m, sub in sw["modes"].items()} if sw else None
+        self.default_mode = sw.get("default") if sw else None
 
     def matches(self, model):
         return fnmatch.fnmatch(model or "", self.match)
+
+    def resolve(self, payload):
+        """The concrete route for this request (a mode sub-route when switching)."""
+        if not self.modes or not isinstance(payload, dict) or not payload.get("tools"):
+            return self.modes[self.default_mode] if self.modes else self
+        return self.modes.get(last_mode(payload.get("messages") or []) or self.default_mode,
+                              self.modes[self.default_mode])
+
+    def rewrite(self, payload):
+        if self.model:
+            payload["model"] = self.model
+        for f in self.drop_fields:
+            payload.pop(f, None)
+        if self.max_tokens and (payload.get("max_tokens") or 0) > self.max_tokens:
+            payload["max_tokens"] = self.max_tokens
+        if self.strip_thinking:
+            for msg in payload.get("messages") or []:
+                if msg.get("role") == "assistant" and isinstance(msg.get("content"), list):
+                    kept = [b for b in msg["content"] if b.get("type") not in ("thinking", "redacted_thinking")]
+                    msg["content"] = kept or [{"type": "text", "text": "."}]
+        if self.fold_system_messages and payload.get("messages"):
+            payload["messages"] = fold_system_messages(payload["messages"])
+        if self.turn_note and payload.get("messages") and payload["messages"][-1].get("role") == "user":
+            last = payload["messages"][-1]
+            last["content"] = _blocks(last["content"]) + [
+                {"type": "text", "text": f"<system-reminder>{self.turn_note}</system-reminder>"}]
+        if self.system_append:
+            sysp = payload.get("system")
+            block = {"type": "text", "text": self.system_append}
+            if isinstance(sysp, list):
+                sysp.append(block)
+            else:
+                payload["system"] = [{"type": "text", "text": sysp}, block] if sysp else [block]
+
+
+def _blocks(content):
+    return [{"type": "text", "text": content}] if isinstance(content, str) else list(content or [])
+
+
+def fold_system_messages(messages):
+    """Turn mid-conversation `role: system` messages into user text and merge same-role
+    neighbours, for upstreams that only accept alternating user/assistant turns."""
+    out = []
+    for msg in messages:
+        role, blocks = msg.get("role"), _blocks(msg.get("content"))
+        if role == "system":
+            text = "\n".join(b.get("text", "") for b in blocks if b.get("type") == "text").strip()
+            if not text:          # e.g. an effort-only operator message
+                continue
+            role, blocks = "user", [{"type": "text", "text": f"<system-reminder>\n{text}\n</system-reminder>"}]
+        if out and out[-1]["role"] == role:
+            out[-1]["content"] = _blocks(out[-1]["content"]) + blocks
+        else:
+            out.append(dict(msg, role=role, content=blocks))
+    return out
+
+
+def last_mode(messages):
+    """Mode named by the most recent `marx-mode <mode>` Bash call in the conversation."""
+    for msg in reversed(messages):
+        if msg.get("role") != "assistant" or not isinstance(msg.get("content"), list):
+            continue
+        for block in reversed(msg["content"]):
+            if block.get("type") == "tool_use":
+                m = MODE_RE.search(str((block.get("input") or {}).get("command", "")))
+                if m:
+                    return m.group(1)
+    return None
 
 
 class Router:
@@ -96,15 +187,12 @@ def make_handler(router):
                     payload = None
             requested = payload.get("model") if isinstance(payload, dict) else None
             try:
-                route = router.pick(requested or "")
+                route = router.pick(requested or "").resolve(payload)
             except LookupError as e:
                 return self._error(404, str(e))
 
             if isinstance(payload, dict):
-                if route.model:
-                    payload["model"] = route.model
-                for f in route.drop_fields:
-                    payload.pop(f, None)
+                route.rewrite(payload)
                 body = json.dumps(payload).encode()
 
             headers = {k: v for k, v in self.headers.items() if k.lower() not in HOP_BY_HOP}
@@ -209,7 +297,10 @@ def build_server(config_path, port, ledger):
     router = Router(config, ledger)
     srv = QuietServer(("127.0.0.1", port), make_handler(router))
     print(f"marx router on http://127.0.0.1:{srv.server_port}  routes: "
-          + ", ".join(f"{r.match}->{r.upstream.netloc}{'/' + r.model if r.model else ''}" for r in router.routes),
+          + ", ".join(f"{r.match}->" + ("switch(" + ", ".join(f"{m}:{sub.upstream.netloc}/{sub.model or 'same'}"
+                                                             for m, sub in r.modes.items()) + ")" if r.modes
+                                        else f"{r.upstream.netloc}{'/' + r.model if r.model else ''}")
+                      for r in router.routes),
           file=sys.stderr, flush=True)
     return srv
 

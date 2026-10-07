@@ -8,6 +8,8 @@ Arms (who does what):
   delegate  Opus is the main loop; an `operator` subagent on the cheap model does the labour
   inverted  the cheap model is the main loop; it calls a `researcher` subagent on Opus to think/code
   cheap     the cheap model does everything (quality floor)
+  switch    ONE conversation; the router serves thinking turns with Opus and labour turns with
+            the cheap model, switched by the agents' own `marx-mode think|labour` calls
 """
 import argparse
 import json
@@ -31,6 +33,9 @@ ARMS = {
     "delegate": dict(main=OPUS,  agents=["operator"],    system="CLAUDE.delegate.md"),
     "inverted": dict(main=CHEAP, agents=["researcher"],  system="CLAUDE.inverted.md"),
     "cheap":    dict(main=CHEAP, agents=[],              system=None),
+    # one conversation, the model swapped per turn by the router (`marx-mode think|labour`)
+    "switch":   dict(main=OPUS,  agents=[],              system="CLAUDE.switch.md",
+                     routes="routes.switch.anthropic.json"),
 }
 
 # "long": jobs outlast a single tool call, like hours-long training jobs vs Claude Code's
@@ -130,13 +135,14 @@ def main():
     ledger = os.path.join(out, "ledger.jsonl")
     if os.path.exists(ledger):
         os.remove(ledger)
-    srv = build_server(os.path.join(ROOT, "marx", "routes.anthropic.json"), a.port, ledger)
+    srv = build_server(os.path.join(ROOT, "marx", cfg.get("routes", "routes.anthropic.json")), a.port, ledger)
     threading.Thread(target=srv.serve_forever, daemon=True).start()
 
     worker = subprocess.Popen([sys.executable, "jobq.py", "worker"], cwd=ws,
                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     env = {k: v for k, v in os.environ.items() if k not in SCRUB}
+    env.update(PATH=os.path.join(ROOT, "bin") + os.pathsep + env.get("PATH", ""))  # marx-mode
     env.update(ANTHROPIC_BASE_URL=f"http://127.0.0.1:{srv.server_port}", IS_SANDBOX="1",
                CLAUDE_CODE_DISABLE_BACKGROUND_TASKS="1")
     if a.labour == "long":
