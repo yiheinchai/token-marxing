@@ -1,0 +1,6 @@
+exp	job	val_bpb	status	description
+0	j001,j003	3.4742	keep	baseline: CausalMLP ctx8, SGD lr1e-2 mom0.9
+1	j004,j005	2.4553	keep	AdamW lr3e-3 betas(0.9,0.99) wd0
+2	j006,j008	2.5077	discard	ctx16: widen context 8->16, embed 24->32 (slower convergence)
+3	j009,j010	2.5509	discard	cosine: warmup 3% + cosine decay 3e-3->3e-4 (higher val loss)
+4	j011,j012	2.4264	keep	lr1e-2: raise AdamW LR 3e-3 -> 1e-2 (best result)
